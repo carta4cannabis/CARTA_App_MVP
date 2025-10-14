@@ -1,0 +1,116 @@
+{
+  "calm_focus": {
+    "label": "Calm & Focus (Day)",
+    "daypart": "day",
+    "terpenePreference": [
+      "focusing",
+      "calming"
+    ],
+    "cannabinoidWeights": {
+      "thc": 0.2,
+      "cbd": 1.0,
+      "cbg": 0.6,
+      "thcv": 0.2
+    },
+    "notes": "Keep psychoactivity minimal; prioritize CBD/CBG with focusing terpenes."
+  },
+  "mood_uplift": {
+    "label": "Mood & Uplift (Day)",
+    "daypart": "day",
+    "terpenePreference": [
+      "uplifting",
+      "focusing"
+    ],
+    "cannabinoidWeights": {
+      "thc": 0.4,
+      "cbd": 0.8,
+      "cbg": 0.4
+    },
+    "notes": "Light THC optional depending on tolerance; CBD forward with bright terpenes."
+  },
+  "rest_restore": {
+    "label": "Rest & Restore (Night)",
+    "daypart": "night",
+    "terpenePreference": [
+      "restorative",
+      "calming"
+    ],
+    "cannabinoidWeights": {
+      "thc": 0.3,
+      "cbd": 0.9,
+      "cbn": 0.8
+    },
+    "notes": "Favor CBD and CBN; keep THC conservative to avoid next\u2011day grogginess."
+  },
+  "mobility_function": {
+    "label": "Mobility & Function (Day)",
+    "daypart": "day",
+    "terpenePreference": [
+      "soothing",
+      "calming"
+    ],
+    "cannabinoidWeights": {
+      "thc": 0.3,
+      "cbd": 1.0,
+      "cbg": 0.5
+    },
+    "notes": "Daytime\u2011friendly balance; avoid impairment."
+  },
+  "mind_memory": {
+    "label": "Mind & Memory (Day)",
+    "daypart": "day",
+    "terpenePreference": [
+      "focusing",
+      "calming"
+    ],
+    "cannabinoidWeights": {
+      "thc": 0.1,
+      "cbd": 1.0,
+      "cbg": 0.6,
+      "thcv": 0.3
+    },
+    "notes": "Ultra\u2011low THC bias; favor CBD/CBG."
+  },
+  "metabolic_wellness": {
+    "label": "Metabolic Wellness (Day)",
+    "daypart": "day",
+    "terpenePreference": [
+      "metabolic",
+      "focusing"
+    ],
+    "cannabinoidWeights": {
+      "thc": 0.2,
+      "cbd": 0.8,
+      "thcv": 0.5
+    },
+    "notes": "Lean on CBD; low THC; THCV optional."
+  },
+  "digestive_support": {
+    "label": "Digestive Support (As needed)",
+    "daypart": "day",
+    "terpenePreference": [
+      "soothing",
+      "calming"
+    ],
+    "cannabinoidWeights": {
+      "thc": 0.3,
+      "cbd": 0.9,
+      "cbg": 0.4
+    },
+    "notes": "As\u2011needed orientation."
+  },
+  "intimacy_vitality_night": {
+    "label": "Intimacy & Vitality (Night)",
+    "daypart": "night",
+    "terpenePreference": [
+      "restorative",
+      "uplifting"
+    ],
+    "cannabinoidWeights": {
+      "thc": 0.4,
+      "cbd": 0.8,
+      "cbn": 0.3
+    },
+    "notes": "Evening orientation; watch THC for sensitive users."
+  }
+}

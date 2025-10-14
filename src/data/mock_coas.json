@@ -1,0 +1,28 @@
+{
+  "BATCH123": {
+    "productId": "SIG_ROSIN_1G",
+    "thc": 69.2,
+    "cbd": 0.3,
+    "terpenes": {
+      "myrcene": 1.4,
+      "limonene": 0.8,
+      "beta_caryophyllene": 0.7,
+      "linalool": 0.2
+    },
+    "harvestDate": "2025-08-15",
+    "packDate": "2025-09-10",
+    "coaUrl": "https://example.com/coa/BATCH123"
+  },
+  "BATCH456": {
+    "productId": "PHY_CALM_CAPS",
+    "thc": 0.0,
+    "cbd": 25.0,
+    "terpenes": {
+      "linalool": 0.4,
+      "beta_caryophyllene": 0.3,
+      "terpinolene": 0.1
+    },
+    "packDate": "2025-09-01",
+    "coaUrl": "https://example.com/coa/BATCH456"
+  }
+}
