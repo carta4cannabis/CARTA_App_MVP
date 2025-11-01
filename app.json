@@ -37,6 +37,7 @@
       "bundler": "metro"
     },
     "plugins": [
+      "./plugins/with-react-native-worklets",
       "expo-barcode-scanner",
       "expo-sqlite",
       "expo-font",
