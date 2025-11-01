@@ -30,7 +30,8 @@
       },
       "permissions": [
         "android.permission.CAMERA"
-      ]
+      ],
+      "package": "com.carta4cannabis.carta"
     },
     "web": {
       "bundler": "metro"
