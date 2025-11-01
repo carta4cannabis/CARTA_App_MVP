@@ -1,9 +1,22 @@
 {
+  "cli": {
+    "version": ">= 13.0.0"
+  },
   "build": {
-    "android": {
-      "hooks": {
-        "preinstall": "npm install react-native-worklets@0.6.1 --save"
+    "development": {
+      "developmentClient": true,
+      "distribution": "internal"
+    },
+    "preview": {
+      "distribution": "internal"
+    },
+    "production": {
+      "android": {
+        "buildType": "app-bundle"
       }
     }
+  },
+  "submit": {
+    "production": {}
   }
 }
