@@ -1,3 +1,4 @@
+// app/src/screens/ProductDetailsScreen.tsx
 import React, { useMemo } from 'react';
 import {
   View,
@@ -10,35 +11,38 @@ import {
 } from 'react-native';
 import { useRoute, RouteProp } from '@react-navigation/native';
 
-/** ----- Robust PRODUCTS import (array or dictionary) ----- */
-let PRODUCTS_ANY: any = [];
-try {
-  // common location
-  PRODUCTS_ANY = require('../data/products').PRODUCTS ??
-                 require('../data/products').default ??
-                 require('../data/products');
-} catch {}
-try {
-  if (!PRODUCTS_ANY || (Array.isArray(PRODUCTS_ANY) && PRODUCTS_ANY.length === 0)) {
-    // fallback location
-    PRODUCTS_ANY = require('../products').PRODUCTS ??
-                   require('../products').default ??
-                   require('../products');
-  }
-} catch {}
-const PRODUCTS: any = PRODUCTS_ANY ?? [];
+// ✅ SINGLE SOURCE OF TRUTH for products
+// we DON'T assume a default export anymore (this was your red squiggle)
+import * as productsSource from '../data/products';
 
-/** ----- Helpers ----- */
 type AnyRoute = RouteProp<Record<string, any>, string>;
+
+// turn whatever the module exported into a flat array
+const asArray = (src: any): any[] => {
+  if (!src) return [];
+  if (Array.isArray(src)) return src;
+  if (typeof src === 'object') return Object.values(src);
+  return [];
+};
+
+// figure out what the module actually exported
+const RAW_PRODUCTS =
+  // common: export const PRODUCTS = [...]
+  (productsSource as any).PRODUCTS ??
+  // or: export default [...]
+  (productsSource as any).default ??
+  // or: module itself is the data
+  productsSource;
+
+const PRODUCTS = asArray(RAW_PRODUCTS);
+
+/* ---------------- helpers ---------------- */
 
 const norm = (v: any) =>
   String(v ?? '')
     .toLowerCase()
     .replace(/[\s_-]+/g, '')
     .trim();
-
-const flattenProducts = (src: any): any[] =>
-  Array.isArray(src) ? src : src && typeof src === 'object' ? Object.values(src) : [];
 
 const tryMatch = (p: any, q: string) => {
   const keys = [
@@ -56,13 +60,11 @@ const tryMatch = (p: any, q: string) => {
 };
 
 const resolveProduct = (params: any) => {
-  // 1) if the whole product was passed, just use it
+  // 1) whole product was passed in navigation
   const direct = params?.product ?? params?.p;
   if (direct) return direct;
 
-  const list = flattenProducts(PRODUCTS);
-
-  // 2) by explicit id/key-ish fields
+  // 2) match by id/key/slug/name
   const q =
     params?.id ??
     params?.productId ??
@@ -70,21 +72,21 @@ const resolveProduct = (params: any) => {
     params?.detailsKey ??
     params?.slug ??
     params?.name;
+
   if (q) {
-    const byKey = list.find((p) => tryMatch(p, q));
+    const byKey = PRODUCTS.find((p) => tryMatch(p, q));
     if (byKey) return byKey;
   }
 
-  // 3) by numeric index (from grid)
-  if (typeof params?.index === 'number' && list[params.index]) {
-    return list[params.index];
+  // 3) match by numeric index (from grid)
+  if (typeof params?.index === 'number' && PRODUCTS[params.index]) {
+    return PRODUCTS[params.index];
   }
 
-  // 4) last resort: first item (prevents crash, still shows “not found” UI if missing)
+  // 4) nothing found
   return undefined;
 };
 
-/** ----- UI helpers ----- */
 const SectionList = ({
   title,
   data,
@@ -114,7 +116,10 @@ const SectionList = ({
 
 export default function ProductDetailsScreen() {
   const route = useRoute<AnyRoute>();
-  const product = useMemo(() => resolveProduct(route.params), [route.params]);
+  const product = useMemo(
+    () => resolveProduct(route.params),
+    [route.params]
+  ) as any;
 
   if (!product) {
     return (
@@ -143,7 +148,10 @@ export default function ProductDetailsScreen() {
 
   return (
     <SafeAreaView style={s.safe}>
-      <ScrollView contentContainerStyle={s.container} showsVerticalScrollIndicator={false}>
+      <ScrollView
+        contentContainerStyle={s.container}
+        showsVerticalScrollIndicator={false}
+      >
         {imgSource && (
           <Image
             source={imgSource}
@@ -153,7 +161,7 @@ export default function ProductDetailsScreen() {
           />
         )}
 
-        <Text style={s.title}>{product.name}</Text>
+        <Text style={s.title}>{product.name ?? 'CARTA Product'}</Text>
 
         {product.description ? (
           <>
@@ -195,22 +203,27 @@ export default function ProductDetailsScreen() {
                 </View>
               ) : null}
               {product.dosing?.notes ? (
-                <Text style={[s.muted, { marginTop: 6 }]}>{product.dosing.notes}</Text>
+                <Text style={[s.muted, { marginTop: 6 }]}>
+                  {product.dosing.notes}
+                </Text>
               ) : null}
             </View>
           </View>
         )}
 
-        {/* Order: Cannabinoids → Terpenes → Botanicals → Nutrients */}
+        {/* CARTA detail stacks */}
         <SectionList title="Cannabinoids" data={product.cannabinoids} />
         <SectionList title="Terpenes" data={product.terpenes} />
         <SectionList title="Botanicals" data={product.botanicals} />
         <SectionList title="Nutrients" data={product.nutrients} />
 
-        {/* Optional extras if present */}
+        {/* extras */}
         <SectionList title="How to use" data={product.usageGuide} />
         <SectionList title="Precautions" data={product.precautions} />
-        <SectionList title="Drug/Condition Interactions" data={product.interactions} />
+        <SectionList
+          title="Drug/Condition Interactions"
+          data={product.interactions}
+        />
         <SectionList title="Potential Allergies" data={product.allergies} />
 
         <View style={{ height: 28 }} />
@@ -219,7 +232,7 @@ export default function ProductDetailsScreen() {
   );
 }
 
-/* -------- premium theme -------- */
+/* -------- theme -------- */
 const GOLD = '#D4AF37';
 const DEEP = '#0E1A16';
 const CARD = '#121F1A';
@@ -249,6 +262,11 @@ const s = StyleSheet.create({
   body: { color: TEXT, fontSize: 14, lineHeight: 20 },
   bold: { color: TEXT, fontWeight: '700', fontSize: 14 },
   muted: { color: MUTED, fontSize: 13 },
-  bulletRow: { flexDirection: 'row', alignItems: 'flex-start', marginBottom: 4, gap: 6 },
+  bulletRow: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    marginBottom: 4,
+    gap: 6,
+  },
   bullet: { color: GOLD, marginTop: Platform.OS === 'ios' ? 1 : 0 },
 });
