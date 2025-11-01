@@ -1,0 +1,13 @@
+
+/android
+/ios
+app/android
+app/ios
+
+**/build/**
+**/.gradle/**
+
+assets/poster/carta_poster.png
+app/assets/posters/carta_poster.png
+
+

@@ -1,0 +1,9 @@
+{
+  "build": {
+    "android": {
+      "hooks": {
+        "preinstall": "npm install react-native-worklets@0.6.1 --save"
+      }
+    }
+  }
+}
