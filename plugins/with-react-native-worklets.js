@@ -1,54 +1,69 @@
 // plugins/with-react-native-worklets.js
+// Purpose:
+// 1) make sure the native project knows about :react-native-worklets
+// 2) force-add the Google ML Kit barcode dependency so expo-barcode-scanner can compile
+
 const {
-  withSettingsGradle,
+  withPlugins,
   withAppBuildGradle,
+  withSettingsGradle,
+  createRunOncePlugin,
 } = require("@expo/config-plugins");
 
-const WORKLETS_MODULE = "react-native-worklets";
+// try to read version so Expo's "run once" works nicely
+let pkgName = "react-native-worklets";
+let pkgVersion = "0.6.1";
+try {
+  const pkg = require("react-native-worklets/package.json");
+  pkgName = pkg.name || pkgName;
+  pkgVersion = pkg.version || pkgVersion;
+} catch (e) {
+  // keep defaults
+}
 
-module.exports = function withReactNativeWorklets(config) {
-  // 1) make sure the module is included in settings.gradle
-  config = withSettingsGradle(config, (config) => {
-    const mod = config.modResults;
-
-    const includeLine = `include ':${WORKLETS_MODULE}'`;
-    const projectLine = `project(':${WORKLETS_MODULE}').projectDir = new File(rootProject.projectDir, '../node_modules/${WORKLETS_MODULE}/android')`;
-
-    if (!mod.contents.includes(includeLine)) {
-      mod.contents += `\n${includeLine}`;
+function ensureSettingsGradle(config) {
+  return withSettingsGradle(config, (config) => {
+    let contents = config.modResults.contents;
+    // add the include only if it's not already there
+    if (!contents.includes("react-native-worklets")) {
+      contents += `
+include ':react-native-worklets'
+project(':react-native-worklets').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-worklets/android')
+`;
+      config.modResults.contents = contents;
     }
-    if (!mod.contents.includes(projectLine)) {
-      mod.contents += `\n${projectLine}`;
-    }
-
     return config;
   });
+}
 
-  // 2) add dependency to android/app/build.gradle
-  config = withAppBuildGradle(config, (config) => {
-    const mod = config.modResults;
+function ensureAppBuildGradle(config) {
+  return withAppBuildGradle(config, (config) => {
+    let gradle = config.modResults.contents;
 
-    // avoid double-injecting
-    if (
-      !mod.contents.includes(
-        `implementation project(':${WORKLETS_MODULE}')`
-      )
-    ) {
-      // find the main dependencies block and inject a single line
-      mod.contents = mod.contents.replace(
-        /dependencies\s*{([\s\S]*?)}/,
-        (match) => {
-          // insert right after the opening brace
-          return match.replace(
-            "{",
-            `{\n    implementation project(':${WORKLETS_MODULE}')`
-          );
-        }
-      );
-    }
+    // helper to inject into dependencies { ... }
+    const addDep = (src, depLine) => {
+      if (src.includes(depLine)) return src;
+      return src.replace(/dependencies\s*{/, (match) => `${match}\n    ${depLine}`);
+    };
 
+    // 1) make sure worklets is there
+    gradle = addDep(gradle, "implementation project(':react-native-worklets')");
+
+    // 2) make sure ML Kit barcode is there (version is stable enough for 2025 Expo builds)
+    // if you ever get a "cannot find 17.3.0" error, bump this to the latest from Maven
+    gradle = addDep(gradle, "implementation 'com.google.mlkit:barcode-scanning:17.3.0'");
+
+    config.modResults.contents = gradle;
     return config;
   });
+}
 
-  return config;
-};
+function withWorkletsAndMLKit(config) {
+  return withPlugins(config, [ensureSettingsGradle, ensureAppBuildGradle]);
+}
+
+module.exports = createRunOncePlugin(
+  withWorkletsAndMLKit,
+  "with-react-native-worklets",
+  pkgVersion
+);
