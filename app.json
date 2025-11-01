@@ -38,10 +38,10 @@
     },
     "plugins": [
       "./plugins/with-react-native-worklets",
-      "expo-barcode-scanner",
       "expo-sqlite",
       "expo-font",
-      "expo-asset"
+      "expo-asset", 
+      "expo-camera"
     ],
     "extra": {
       "eas": {
