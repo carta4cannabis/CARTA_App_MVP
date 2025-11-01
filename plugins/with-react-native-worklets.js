@@ -2,72 +2,53 @@
 const {
   withSettingsGradle,
   withAppBuildGradle,
-  createRunOncePlugin,
-} = require('@expo/config-plugins');
+} = require("@expo/config-plugins");
 
-// we'll read the version from the actual package if it's there
-let pkg = { name: 'react-native-worklets', version: '0.0.0' };
-try {
-  // this will exist on EAS after `npm ci`
-  pkg = require('react-native-worklets/package.json');
-} catch (e) {
-  // ignore – we'll still inject the gradle lines
-}
+const WORKLETS_MODULE = "react-native-worklets";
 
-function addWorkletsToSettingsGradle(mod) {
-  const already =
-    mod.contents.includes("react-native-worklets") ||
-    mod.contents.includes(":react-native-worklets");
+module.exports = function withReactNativeWorklets(config) {
+  // 1) make sure the module is included in settings.gradle
+  config = withSettingsGradle(config, (config) => {
+    const mod = config.modResults;
 
-  if (!already) {
-    mod.contents += `
-include ':react-native-worklets'
-project(':react-native-worklets').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-worklets/android')
-`;
-  }
+    const includeLine = `include ':${WORKLETS_MODULE}'`;
+    const projectLine = `project(':${WORKLETS_MODULE}').projectDir = new File(rootProject.projectDir, '../node_modules/${WORKLETS_MODULE}/android')`;
 
-  return mod;
-}
-
-function addWorkletsToAppBuildGradle(mod) {
-  const already = mod.contents.includes("react-native-worklets");
-  if (already) return mod;
-
-  // try to inject into the dependencies block
-  mod.contents = mod.contents.replace(
-    /dependencies\s*{([\s\S]*?)}/m,
-    (match) => {
-      if (match.includes("implementation project(':react-native-worklets')")) {
-        return match; // already there
-      }
-      return match.replace(
-        /}\s*$/m,
-        "    implementation project(':react-native-worklets')\n}\n"
-      );
+    if (!mod.contents.includes(includeLine)) {
+      mod.contents += `\n${includeLine}`;
     }
-  );
+    if (!mod.contents.includes(projectLine)) {
+      mod.contents += `\n${projectLine}`;
+    }
 
-  return mod;
-}
-
-const withReactNativeWorklets = (config) => {
-  // add to settings.gradle
-  config = withSettingsGradle(config, (cfg) => {
-    cfg.modResults = addWorkletsToSettingsGradle(cfg.modResults);
-    return cfg;
+    return config;
   });
 
-  // add to android/app/build.gradle
-  config = withAppBuildGradle(config, (cfg) => {
-    cfg.modResults = addWorkletsToAppBuildGradle(cfg.modResults);
-    return cfg;
+  // 2) add dependency to android/app/build.gradle
+  config = withAppBuildGradle(config, (config) => {
+    const mod = config.modResults;
+
+    // avoid double-injecting
+    if (
+      !mod.contents.includes(
+        `implementation project(':${WORKLETS_MODULE}')`
+      )
+    ) {
+      // find the main dependencies block and inject a single line
+      mod.contents = mod.contents.replace(
+        /dependencies\s*{([\s\S]*?)}/,
+        (match) => {
+          // insert right after the opening brace
+          return match.replace(
+            "{",
+            `{\n    implementation project(':${WORKLETS_MODULE}')`
+          );
+        }
+      );
+    }
+
+    return config;
   });
 
   return config;
 };
-
-module.exports = createRunOncePlugin(
-  withReactNativeWorklets,
-  pkg.name,
-  pkg.version
-);
