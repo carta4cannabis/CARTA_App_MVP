@@ -2,8 +2,8 @@
   "expo": {
     "name": "CARTA",
     "slug": "carta",
-    "jsEngine": "jsc",
-    "version": "0.1.0",
+    "jsEngine": "hermes",
+    "version": "1.0.9",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "splash": {
@@ -19,11 +19,13 @@
     ],
     "ios": {
       "supportsTablet": true,
+      "buildNumber": "8", 
       "infoPlist": {
         "NSCameraUsageDescription": "CARTA needs camera access to scan product QR codes."
       }
     },
     "android": {
+      "versionCode": "89",
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#061A18"
