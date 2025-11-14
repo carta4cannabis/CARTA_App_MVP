@@ -12,26 +12,30 @@
       "backgroundColor": "#061A18"
     },
     "updates": {
-      "fallbackToCacheTimeout": 0
+      "fallbackToCacheTimeout": 0,
+      "url": "https://u.expo.dev/cde47772-74a1-4c9f-9c4d-67fd0d65461f"
     },
     "assetBundlePatterns": [
       "**/*"
     ],
     "ios": {
       "supportsTablet": true,
-      "buildNumber": "8", 
+      "buildNumber": "8",
       "infoPlist": {
-        "NSCameraUsageDescription": "CARTA needs camera access to scan product QR codes."
-      }
+        "NSCameraUsageDescription": "CARTA needs camera access to scan product QR codes.",
+        "ITSAppUsesNonExemptEncryption": false
+      },
+      "bundleIdentifier": "com.carta4cannabis.carta"
     },
     "android": {
-      "versionCode": "89",
+      "versionCode": 89,
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#061A18"
       },
       "permissions": [
-        "android.permission.CAMERA"
+        "android.permission.CAMERA",
+        "android.permission.RECORD_AUDIO"
       ],
       "package": "com.carta4cannabis.carta"
     },
@@ -42,13 +46,16 @@
       "./plugins/with-react-native-worklets",
       "expo-sqlite",
       "expo-font",
-      "expo-asset", 
+      "expo-asset",
       "expo-camera"
     ],
     "extra": {
       "eas": {
         "projectId": "cde47772-74a1-4c9f-9c4d-67fd0d65461f"
       }
+    },
+    "runtimeVersion": {
+      "policy": "appVersion"
     }
   }
 }

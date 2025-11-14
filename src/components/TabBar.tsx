@@ -1,30 +1,44 @@
-
 import React from 'react';
-import { View, Pressable, Text } from 'react-native';
-import { useNavigation, useRoute } from '@react-navigation/native';
-import { useStyles, spacing } from '../styles/styles';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { Ionicons } from '@expo/vector-icons';
 
-const items = [
-  { key: 'Scan', label: 'Scan' },
-  { key: 'Store', label: 'Store' },
-  { key: 'Log', label: 'Log' },
-  { key: 'Retailers', label: 'Retailers' }
-];
+// ✅ Screen components
+import HomeScreen from '../HomeScreen';
+import CARTA_QuestScreen from '../addons/CARTA_QuestScreen';
 
-export const TabBar: React.FC = () => {
-  const nav = useNavigation<any>();
-  const route = useRoute();
-  const { t } = useStyles();
+const Tab = createBottomTabNavigator();
+
+export default function TabBar() {
   return (
-    <View style={{ position:'absolute', left: spacing.lg, right: spacing.lg, bottom: spacing.lg, backgroundColor: t.card, borderRadius: 16, borderColor: t.border, borderWidth: 1, flexDirection:'row', justifyContent:'space-around', paddingVertical: 10 }}>
-      {items.map(it => {
-        const active = (route.name === it.key);
-        return (
-          <Pressable key={it.key} onPress={()=>nav.navigate(it.key as never)} style={{ paddingHorizontal: 12, paddingVertical: 6, borderRadius: 12, backgroundColor: active ? t.accent : 'transparent' }}>
-            <Text style={{ color: active ? '#fff' : t.text, fontWeight:'700' }}>{it.label}</Text>
-          </Pressable>
-        );
+    <Tab.Navigator
+      screenOptions={({ route }) => ({
+        tabBarIcon: ({ focused, color, size }) => {
+          let name: any = 'ellipse';
+          if (route.name === 'Home')  name = focused ? 'home' : 'home-outline';
+          if (route.name === 'Quest') name = focused ? 'compass' : 'compass-outline';
+          return <Ionicons name={name} size={size} color={color} />;
+        },
+        headerTitleAlign: 'center',
       })}
-    </View>
+    >
+      <Tab.Screen
+        name="Home"
+        component={HomeScreen}
+        options={{ title: 'Home' }}
+      />
+
+      {/* ❌ Removed Scan and Find tabs intentionally */}
+
+      <Tab.Screen
+        name="Quest"
+        component={CARTA_QuestScreen}
+        options={{
+          title: 'CARTA Quest',
+          headerShown: true,
+        }}
+      />
+
+      {/* Keep any other existing tabs you use here (Dosing, Tracker, Coach, Products, Education, More, etc.) */}
+    </Tab.Navigator>
   );
-};
+}

@@ -1,181 +1,316 @@
+// @ts-nocheck
 // app/src/screens/ScannerScreen.tsx
-// NOTE: this screen uses ONLY expo-camera. If you still have `expo-barcode-scanner`
-// installed in package.json, uninstall it (npm uninstall expo-barcode-scanner) so
-// Android stops failing on :expo-barcode-scanner:compileReleaseKotlin.
-
-import React, { useCallback, useEffect, useState } from 'react';
+import React, {
+  useCallback,
+  useRef,
+  useState,
+  useLayoutEffect,
+} from 'react';
 import {
-  Alert,
-  Linking,
-  Pressable,
   SafeAreaView,
-  StyleSheet,
-  Text,
   View,
+  Text,
+  StyleSheet,
+  Pressable,
+  Platform,
+  ImageBackground,
 } from 'react-native';
-import { CameraView, useCameraPermissions } from 'expo-camera';
+import { useNavigation, useFocusEffect } from '@react-navigation/native';
+import {
+  CameraView,
+  useCameraPermissions,
+  BarcodeScanningResult,
+} from 'expo-camera';
+import { lookupProductIdFromScan } from '../utils/scanMap';
 
-export default function ScannerScreen() {
-  const [permission, requestPermission] = useCameraPermissions();
-  const [scanned, setScanned] = useState(false);
-  const [last, setLast] = useState<string | null>(null);
+const BG = require('../../assets/bg/carta_pattern.png');
 
-  // ask once on load
-  useEffect(() => {
-    if (permission?.status === 'undetermined') {
-      requestPermission();
+const GOLD = '#C9A86A';
+const DEEP = '#0E1A16';
+const CARD = '#121F1A';
+const INK = '#E9EFEA';
+const MUTED = '#9FB0A5';
+const BORDER = '#1E2B26';
+
+function parseCoaFromScan(raw: string | undefined | null) {
+  if (!raw) return null;
+  const text = String(raw).trim();
+  let initial: any = null;
+
+  if (text.startsWith('{')) {
+    try {
+      const parsed = JSON.parse(text);
+      initial = parsed.coa || parsed;
+    } catch {
+      initial = null;
     }
-  }, [permission?.status, requestPermission]);
-
-  const onScanned = useCallback(
-    ({ data }: { data?: string }) => {
-      // no data, ignore
-      if (!data) return;
-
-      setScanned(true);
-      setLast(String(data));
-
-      const isUrl = /^https?:\/\//i.test(data);
-
-      Alert.alert(
-        'Scanned',
-        String(data),
-        [
-          isUrl
-            ? {
-                text: 'Open',
-                onPress: () => Linking.openURL(data).catch(() => {}),
-              }
-            : undefined,
-          {
-            text: 'Scan again',
-            onPress: () => setScanned(false),
-          },
-          { text: 'OK', style: 'cancel' },
-        ].filter(Boolean) as any
-      );
-    },
-    []
-  );
-
-  // still loading permission object
-  if (!permission) {
-    return (
-      <SafeAreaView style={s.center}>
-        <Text style={s.title}>Preparing camera…</Text>
-        <Pressable onPress={requestPermission} style={s.button}>
-          <Text style={s.buttonText}>Grant Permission</Text>
-        </Pressable>
-      </SafeAreaView>
-    );
   }
 
-  // denied UI
-  if (!permission.granted) {
-    return (
-      <SafeAreaView style={s.center}>
-        <Text style={s.title}>Camera blocked</Text>
-        <Text style={s.text}>
-          Enable camera access to scan CARTA product codes.
-        </Text>
-        <View style={s.row}>
-          <Pressable onPress={requestPermission} style={s.button}>
-            <Text style={s.buttonText}>Ask Again</Text>
-          </Pressable>
+  if (!initial && text.startsWith('carta-coa?')) {
+    const query = text.split('?', 2)[1] || '';
+    const obj: Record<string, number> = {};
+    query.split('&').forEach(pair => {
+      if (!pair) return;
+      const [k, v] = pair.split('=');
+      if (!k || !v) return;
+      const key = decodeURIComponent(k);
+      const val = decodeURIComponent(v);
+      const num = parseFloat(val);
+      if (!isNaN(num)) obj[key] = num;
+    });
+    if (Object.keys(obj).length > 0) {
+      initial = obj;
+    }
+  }
+
+  return initial;
+}
+
+export default function ScannerScreen() {
+  const nav = useNavigation();
+
+  useLayoutEffect(() => {
+    (nav as any).setOptions?.({ headerShown: false });
+  }, [nav]);
+
+  const [permission, requestPermission] = useCameraPermissions();
+  const hasPerm = permission?.granted === true;
+
+  const canScanRef = useRef(true);
+  useFocusEffect(
+    useCallback(() => {
+      canScanRef.current = true;
+      return () => {
+        canScanRef.current = false;
+      };
+    }, []),
+  );
+
+  const [banner, setBanner] = useState<string | null>(null);
+
+  const onScanned = useCallback(
+    (res: BarcodeScanningResult) => {
+      if (!canScanRef.current) return;
+      canScanRef.current = false;
+
+      const data = String(res?.data ?? '');
+
+      const initialCoa = parseCoaFromScan(data);
+      if (initialCoa) {
+        nav.navigate('CultivarProfileMatching' as never, {
+          initialCoa,
+        } as never);
+        return;
+      }
+
+      const productId = lookupProductIdFromScan(data);
+      if (productId) {
+        nav.navigate('ProductDetails' as never, { productId } as never);
+      } else {
+        setBanner(
+          'Unrecognized code. Try a different label or open products or COA tools directly.',
+        );
+        setTimeout(() => {
+          setBanner(null);
+          canScanRef.current = true;
+        }, 1400);
+      }
+    },
+    [nav],
+  );
+
+  return (
+    <ImageBackground
+      source={BG}
+      style={{ flex: 1 }}
+      resizeMode="repeat"
+      imageStyle={{ opacity: 0.5 }}
+    >
+      <SafeAreaView style={s.safe}>
+        <View style={s.header}>
           <Pressable
-            onPress={() => Linking.openSettings()}
-            style={[s.button, s.alt]}
+            onPress={() => nav.goBack()}
+            style={s.backBtn}
           >
-            <Text style={[s.buttonText, { color: '#E9EFEA' }]}>
-              Open Settings
-            </Text>
+            <Text style={s.backText}>{'\u25C0'}</Text>
+            <Text style={s.backLabel}>Back</Text>
+          </Pressable>
+          <Text style={s.title}>Scan a Code</Text>
+          <Text style={s.subTitle}>
+            Center the barcode or QR inside the frame. COA-enabled QR codes
+            will open the cultivar profile matcher; product barcodes open the
+            details page.
+          </Text>
+        </View>
+
+        <View style={s.card}>
+          {!permission ? (
+            <View style={{ padding: 12 }}>
+              <Text style={s.cardTitle}>Requesting camera permission…</Text>
+              <Text style={[s.body, { marginTop: 6 }]}>
+                Please enable camera permissions to scan labels and COA QRs.
+              </Text>
+            </View>
+          ) : hasPerm ? (
+            <View style={s.scannerWrap}>
+              <CameraView
+                style={StyleSheet.absoluteFillObject as any}
+                facing="back"
+                barcodeScannerSettings={{
+                  barcodeTypes: ['qr', 'ean13', 'upc_a', 'upc_e', 'code128'],
+                }}
+                onBarcodeScanned={onScanned}
+              />
+              <View pointerEvents="none" style={s.maskOuter}>
+                <View style={s.maskRow} />
+                <View style={s.maskCenterRow}>
+                  <View style={s.maskSide} />
+                  <View style={s.frame} />
+                  <View style={s.maskSide} />
+                </View>
+                <View style={s.maskRow} />
+              </View>
+            </View>
+          ) : (
+            <View style={{ padding: 12 }}>
+              <Text style={s.cardTitle}>Camera access needed</Text>
+              <Text style={[s.body, { marginTop: 6 }]}>
+                Please enable camera permissions to scan labels and COA QRs.
+              </Text>
+              <Pressable
+                style={({ pressed }) => [
+                  s.btn,
+                  pressed && s.pressed,
+                  { marginTop: 12 },
+                ]}
+                onPress={requestPermission}
+              >
+                <Text style={s.btnText}>Grant permission</Text>
+              </Pressable>
+            </View>
+          )}
+        </View>
+
+        {banner ? (
+          <View style={s.banner}>
+            <Text style={s.bannerText}>{banner}</Text>
+          </View>
+        ) : null}
+
+        <View style={{ padding: 16 }}>
+          <Pressable
+            onPress={() => nav.navigate('Products' as never)}
+            style={({ pressed }) => [s.btnGhost, pressed && s.pressed]}
+          >
+            <Text style={s.btnGhostText}>Browse Products Instead</Text>
           </Pressable>
         </View>
       </SafeAreaView>
-    );
-  }
-
-  // scanner UI
-  return (
-    <SafeAreaView style={s.container}>
-      <View style={s.box}>
-        <CameraView
-          style={StyleSheet.absoluteFillObject}
-          facing="back"
-          // pick the types you want
-          barcodeScannerSettings={{
-            barcodeTypes: ['qr', 'pdf417', 'ean13', 'ean8', 'code128'],
-          }}
-          // when we already scanned, stop sending events
-          onBarcodeScanned={scanned ? undefined : onScanned}
-        />
-        {/* visual frame */}
-        <View style={s.frame} />
-      </View>
-
-      <View style={s.footer}>
-        <Text style={s.hint}>Align the code inside the frame</Text>
-        {last ? <Text style={s.last}>Last: {last}</Text> : null}
-
-        <Pressable
-          style={[s.button, !scanned && s.disabled]}
-          onPress={() => setScanned(false)}
-          disabled={!scanned}
-        >
-          <Text style={s.buttonText}>
-            {scanned ? 'Scan Again' : 'Ready to Scan'}
-          </Text>
-        </Pressable>
-      </View>
-    </SafeAreaView>
+    </ImageBackground>
   );
 }
 
 const s = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#0E1412' },
-  center: {
-    flex: 1,
-    justifyContent: 'center',
+  safe: { backgroundColor: 'transparent', flex: 1 },
+
+  header: {
+    paddingHorizontal: 16,
+    paddingTop: 16,
+    paddingBottom: 16,
+    borderBottomColor: BORDER,
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    backgroundColor: 'rgba(18, 31, 26, 0.9)',
+  },
+  backBtn: {
+    flexDirection: 'row',
     alignItems: 'center',
-    padding: 24,
-    backgroundColor: '#0E1412',
+    marginBottom: 6,
+    alignSelf: 'flex-start',
+  },
+  backText: {
+    color: GOLD,
+    fontSize: 14,
+    marginRight: 4,
+    marginBottom: 8,
+  },
+  backLabel: {
+    color: GOLD,
+    fontSize: 14,
+    fontWeight: '500',
+    marginBottom: 8,
   },
   title: {
-    color: '#E9EFEA',
-    fontSize: 18,
-    fontWeight: '600',
-    marginBottom: 6,
-    textAlign: 'center',
+    color: GOLD,
+    fontSize: 26,
+    fontWeight: '800',
   },
-  text: { color: '#C8D1CC', textAlign: 'center' },
-  row: { flexDirection: 'row', gap: 12, marginTop: 8 },
-  box: {
-    flex: 1,
+  subTitle: {
+    color: INK,
+    marginTop: 8,
+    marginBottom: 12,
+  },
+
+  card: {
+    backgroundColor: CARD,
+    borderColor: BORDER,
+    borderWidth: StyleSheet.hairlineWidth,
+    borderRadius: 14,
     margin: 16,
-    borderRadius: 16,
+    marginTop: 12,
     overflow: 'hidden',
-    backgroundColor: '#000',
   },
+  scannerWrap: { height: 360, backgroundColor: '#000' },
+
+  maskOuter: { flex: 1 },
+  maskRow: { flex: 1, backgroundColor: 'rgba(0,0,0,0.45)' },
+  maskCenterRow: { height: 220, flexDirection: 'row' },
+  maskSide: { flex: 1, backgroundColor: 'rgba(0,0,0,0.45)' },
   frame: {
-    position: 'absolute',
-    top: '18%',
-    bottom: '18%',
-    left: '10%',
-    right: '10%',
-    borderWidth: 3,
-    borderColor: '#C9A86A',
+    width: 260,
+    borderColor: GOLD,
+    borderWidth: 2,
     borderRadius: 12,
+    backgroundColor: 'transparent',
   },
-  footer: { padding: 16, alignItems: 'center', gap: 8 },
-  hint: { color: '#E9EFEA' },
-  last: { color: '#9FB0A8', fontSize: 12 },
-  button: {
-    backgroundColor: '#C9A86A',
-    paddingHorizontal: 18,
-    paddingVertical: 12,
-    borderRadius: 10,
+
+  banner: {
+    alignSelf: 'center',
+    backgroundColor: '#1F2D28',
+    borderColor: GOLD,
+    borderWidth: 2,
+    borderRadius: 12,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
   },
-  buttonText: { color: '#0E1412', fontWeight: '700' },
-  alt: { backgroundColor: '#26352F' },
-  disabled: { opacity: 0.6 },
+  bannerText: { color: INK, fontWeight: '700' },
+
+  btn: {
+    borderColor: GOLD,
+    borderWidth: 1,
+    borderRadius: 16,
+    paddingVertical: 10,
+    alignItems: 'center',
+  },
+  btnText: { color: GOLD, fontWeight: '700' },
+  btnGhost: {
+    borderColor: GOLD,
+    borderWidth: 1,
+    backgroundColor: CARD,
+    borderRadius: 16,
+    padding: 10,
+    alignItems: 'center',
+  },
+  btnGhostText: { color: INK, fontWeight: '700' },
+
+  pressed: { opacity: 0.7 },
+  cardTitle: { color: INK, fontSize: 18, fontWeight: '800' },
+  body: {
+    color: INK,
+    fontSize: 14,
+    lineHeight: 20,
+    ...(Platform.select({
+      ios: { fontFamily: 'System' },
+      android: { fontFamily: 'sans-serif' },
+    }) as object),
+  },
 });

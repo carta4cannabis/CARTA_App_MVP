@@ -1,4 +1,10 @@
-import React, { useMemo, useState } from 'react';
+// app/src/screens/SessionTrackerScreen.tsx
+import React, {
+  useMemo,
+  useState,
+  useCallback,
+  useLayoutEffect,
+} from 'react';
 import {
   View,
   Text,
@@ -9,13 +15,25 @@ import {
   TextInput,
   KeyboardAvoidingView,
   Platform,
+  ImageBackground,
 } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import {
+  saveSessionEntry,
+  refreshAtiAndCoach,
+} from '../addons/CARTA_CoachExtras';
 
-/* ---------------- types & constants ---------------- */
+const BG = require('../../assets/bg/carta_pattern.png');
 
+/* theme */
+const GOLD = '#C9A86A';
+const DEEP = '#0E1A16';
+const CARD = '#121F1A';
+const TEXT = '#E9EFEA';
+
+/* types */
 type MethodId = 'capsule' | 'inhalable' | 'stacker' | 'booster';
-
 type CapsuleProfile =
   | 'Calm & Focus'
   | 'Mood & Uplift'
@@ -25,12 +43,9 @@ type CapsuleProfile =
   | 'Mind & Memory'
   | 'Rest & Restore'
   | 'Intimacy & Vitality';
-
 type DayPart = 'AM' | 'PM' | 'Bedtime';
-
 type InhType = 'flower' | 'vape' | 'dab';
 type Potency = 'low' | 'mid' | 'high';
-
 type Outcome =
   | 'Pain relief'
   | 'Anxiety relief'
@@ -39,30 +54,15 @@ type Outcome =
   | 'Mood'
   | 'Nausea relief'
   | 'Appetite';
-
 type SideEffect =
-  | 'Drowsy'
+  | 'Drowsiness'
   | 'Dry mouth'
-  | 'Dizzy'
-  | 'Paranoia'
-  | 'Fast heartbeat'
-  | 'Headache';
+  | 'Dizziness'
+  | 'Headache'
+  | 'Palpitations'
+  | 'Paranoia';
 
-/** simple global sink so other screens (Coach/Dosing) can read recent sessions */
-const pushSession = (payload: any) => {
-  const key = '__CARTA_SESSIONS__';
-  const arr = (globalThis as any)[key] ?? [];
-  (globalThis as any)[key] = [payload, ...arr];
-  const listeners: Function[] = (globalThis as any).__CARTA_LISTENERS__ ?? [];
-  listeners.forEach(fn => {
-    try {
-      fn(payload);
-    } catch {}
-  });
-};
-
-/* ---------------- tiny UI helpers ---------------- */
-
+/* UI atoms */
 const Chip = ({
   label,
   on,
@@ -74,16 +74,15 @@ const Chip = ({
 }) => (
   <Pressable
     onPress={onPress}
-    style={({ pressed }) => [
-      s.chip,
-      on && s.chipOn,
-      pressed && { opacity: 0.9 },
-    ]}
+    style={[s.chip, on && s.chipOn]}
   >
-    <Text style={[s.chipText, on && s.chipTextOn]}>{label}</Text>
+    <Text
+      style={[s.chipText, on && s.chipTextOn]}
+    >
+      {label}
+    </Text>
   </Pressable>
 );
-
 const Seg = ({
   value,
   setValue,
@@ -100,15 +99,24 @@ const Seg = ({
         <Pressable
           key={it}
           onPress={() => setValue(it)}
-          style={[s.segBtn, on && s.segBtnOn]}
+          style={[
+            s.segBtn,
+            on && s.segBtnOn,
+          ]}
         >
-          <Text style={[s.segLabel, on && s.segLabelOn]}>{it}</Text>
+          <Text
+            style={[
+              s.segLabel,
+              on && s.segLabelOn,
+            ]}
+          >
+            {it}
+          </Text>
         </Pressable>
       );
     })}
   </View>
 );
-
 const Stepper = ({
   value,
   setValue,
@@ -122,14 +130,18 @@ const Stepper = ({
 }) => (
   <View style={s.stepRow}>
     <Pressable
-      onPress={() => setValue(Math.max(min, value - 1))}
+      onPress={() =>
+        setValue(Math.max(min, value - 1))
+      }
       style={s.stepBtn}
     >
       <Text style={s.stepTxt}>−</Text>
     </Pressable>
     <Text style={s.stepVal}>{value}</Text>
     <Pressable
-      onPress={() => setValue(Math.min(max, value + 1))}
+      onPress={() =>
+        setValue(Math.min(max, value + 1))
+      }
       style={s.stepBtn}
     >
       <Text style={s.stepTxt}>＋</Text>
@@ -137,32 +149,43 @@ const Stepper = ({
   </View>
 );
 
-/* ---------------- main screen ---------------- */
-
 export default function SessionTrackerScreen() {
   const insets = useSafeAreaInsets();
+  const nav = useNavigation<any>();
+
+  useLayoutEffect(() => {
+    nav.setOptions?.({ headerShown: false });
+  }, [nav]);
 
   /* date & time */
-  const [when, setWhen] = useState<Date>(new Date());
+  const [when, setWhen] = useState<Date>(
+    new Date(),
+  );
   const whenStr = useMemo(
     () =>
-      `${when.toLocaleDateString()}  ${when.toLocaleTimeString([], {
-        hour: '2-digit',
-        minute: '2-digit',
-      })}`,
-    [when]
+      `${when.toLocaleDateString()}  ${when.toLocaleTimeString(
+        [],
+        { hour: '2-digit', minute: '2-digit' },
+      )}`,
+    [when],
   );
 
   /* methods */
-  const [methods, setMethods] = useState<MethodId[]>(['capsule']);
-
+  const [methods, setMethods] = useState<MethodId[]>([
+    'capsule',
+  ]);
   const toggleMethod = (m: MethodId) =>
-    setMethods(prev => (prev.includes(m) ? prev.filter(x => x !== m) : [...prev, m]));
-
+    setMethods(prev =>
+      prev.includes(m)
+        ? prev.filter(x => x !== m)
+        : [...prev, m],
+    );
+  const useInhalable = methods.includes(
+    'inhalable',
+  );
   const useCapsule = methods.includes('capsule');
-  const useInhalable = methods.includes('inhalable');
-  const useStacker = methods.includes('stacker');
   const useBooster = methods.includes('booster');
+  const useStacker = methods.includes('stacker');
 
   /* capsules */
   const CAPS: CapsuleProfile[] = [
@@ -175,54 +198,77 @@ export default function SessionTrackerScreen() {
     'Rest & Restore',
     'Intimacy & Vitality',
   ];
+  const [capProfiles, setCapProfiles] =
+    useState<CapsuleProfile[]>([]);
+  const [capCounts, setCapCounts] =
+    useState<Record<CapsuleProfile, number>>(
+      {} as any,
+    );
+  const [capWhen, setCapWhen] =
+    useState<Record<CapsuleProfile, DayPart>>(
+      {} as any,
+    );
 
-  const [capProfiles, setCapProfiles] = useState<CapsuleProfile[]>([]);
-  const [capCounts, setCapCounts] = useState<Record<CapsuleProfile, number>>({} as any);
-  const [capWhen, setCapWhen] = useState<Record<CapsuleProfile, DayPart>>({} as any);
-
-  // ---------- FIX: no computed-key destructuring; use clone + delete ----------
   const toggleCapProfile = (p: CapsuleProfile) => {
     setCapProfiles(prev => {
       if (prev.includes(p)) {
         const next = prev.filter(x => x !== p);
-
-        const countsRest: Record<CapsuleProfile, number> = { ...(capCounts as any) };
-        delete (countsRest as any)[p];
-
-        const whenRest: Record<CapsuleProfile, DayPart> = { ...(capWhen as any) };
-        delete (whenRest as any)[p];
-
-        setCapCounts(countsRest);
-        setCapWhen(whenRest);
-
+        const nextCounts = {
+          ...(capCounts as any),
+        } as Record<CapsuleProfile, number>;
+        const nextWhen = {
+          ...(capWhen as any),
+        } as Record<CapsuleProfile, DayPart>;
+        delete nextCounts[p];
+        delete nextWhen[p];
+        setCapCounts(nextCounts);
+        setCapWhen(nextWhen);
         return next;
       } else {
-        setCapCounts({ ...capCounts, [p]: 1 });
-        setCapWhen({ ...capWhen, [p]: 'AM' });
+        setCapCounts({
+          ...capCounts,
+          [p]: 1,
+        });
+        setCapWhen({
+          ...capWhen,
+          [p]: 'AM',
+        });
         return [...prev, p];
       }
     });
   };
-  // ---------------------------------------------------------------------------
-
-  const bumpCount = (p: CapsuleProfile, delta: number) =>
-    setCapCounts(prev => {
-      const cur = prev[p] ?? 0;
-      const next = Math.max(0, cur + delta);
-      return { ...prev, [p]: next };
-    });
-
-  const setDaypart = (p: CapsuleProfile, v: DayPart) =>
-    setCapWhen(prev => ({ ...prev, [p]: v }));
+  const bumpCount = (
+    p: CapsuleProfile,
+    delta: number,
+  ) =>
+    setCapCounts(prev => ({
+      ...prev,
+      [p]: Math.max(
+        0,
+        (prev[p] ?? 0) + delta,
+      ),
+    }));
+  const setDaypart = (
+    p: CapsuleProfile,
+    v: DayPart,
+  ) =>
+    setCapWhen(prev => ({
+      ...prev,
+      [p]: v,
+    }));
 
   /* inhalables */
-  const [inhType, setInhType] = useState<InhType>('flower');
-  const [inhPotency, setInhPotency] = useState<Potency>('mid');
+  const [inhType, setInhType] =
+    useState<InhType>('flower');
+  const [inhPotency, setInhPotency] =
+    useState<Potency>('mid');
   const [puffs, setPuffs] = useState<number>(0);
 
   /* sprays */
-  const [stackerSprays, setStackerSprays] = useState<number>(0);
-  const [boosterSprays, setBoosterSprays] = useState<number>(0);
+  const [stackerSprays, setStackerSprays] =
+    useState<number>(0);
+  const [boosterSprays, setBoosterSprays] =
+    useState<number>(0);
 
   /* outcomes 1-5 */
   const OUTCOMES: Outcome[] = [
@@ -234,16 +280,50 @@ export default function SessionTrackerScreen() {
     'Nausea relief',
     'Appetite',
   ];
-  const [scores, setScores] = useState<Record<Outcome, number>>({} as any);
+  const [scores, setScores] =
+    useState<Record<Outcome, number>>(
+      {} as any,
+    );
 
-  /* side effects multi-select */
-  const SE: SideEffect[] = ['Drowsy', 'Dry mouth', 'Dizzy', 'Paranoia', 'Fast heartbeat', 'Headache'];
-  const [sidefx, setSidefx] = useState<SideEffect[]>([]);
+  /* side effects */
+  const SE: SideEffect[] = [
+    'Drowsiness',
+    'Dry mouth',
+    'Dizziness',
+    'Headache',
+    'Palpitations',
+    'Paranoia',
+  ];
+  const [sidefx, setSidefx] = useState<
+    SideEffect[]
+  >([]);
 
   /* notes */
   const [notes, setNotes] = useState<string>('');
 
-  const save = () => {
+  const resetSessionTracker = useCallback(() => {
+    setWhen(new Date());
+    setMethods(['capsule']);
+    setCapProfiles([]);
+    setCapCounts(
+      {} as Record<CapsuleProfile, number>,
+    );
+    setCapWhen(
+      {} as Record<CapsuleProfile, DayPart>,
+    );
+    setInhType('flower');
+    setInhPotency('mid');
+    setPuffs(0);
+    setStackerSprays(0);
+    setBoosterSprays(0);
+    setScores(
+      {} as Record<Outcome, number>,
+    );
+    setSidefx([]);
+    setNotes('');
+  }, []);
+
+  const save = useCallback(async () => {
     const payload = {
       when: when.toISOString(),
       methods,
@@ -257,39 +337,123 @@ export default function SessionTrackerScreen() {
         : null,
       sprays: {
         stacker: useStacker ? stackerSprays : 0,
-        booster: useBooster ? boosterSprays : 0,
+        booster: useBooster
+          ? boosterSprays
+          : 0,
       },
       outcomes: scores,
       sideEffects: sidefx,
       notes,
     };
 
-    pushSession(payload);
+    await saveSessionEntry(payload as any);
+    resetSessionTracker();
+    try {
+      await refreshAtiAndCoach();
+    } catch {}
     alert('Session saved.');
-  };
+  }, [
+    when,
+    methods,
+    capProfiles,
+    capCounts,
+    capWhen,
+    useInhalable,
+    inhType,
+    inhPotency,
+    puffs,
+    useStacker,
+    stackerSprays,
+    useBooster,
+    boosterSprays,
+    scores,
+    sidefx,
+    notes,
+    resetSessionTracker,
+  ]);
 
   return (
     <SafeAreaView style={s.safe}>
+      {/* Background */}
+      <ImageBackground
+        source={BG}
+        style={StyleSheet.absoluteFillObject}
+        resizeMode={
+          Platform.OS === 'ios' ? 'repeat' : 'cover'
+        }
+        imageStyle={{
+          opacity: 0.5,
+          resizeMode:
+            Platform.OS === 'ios'
+              ? 'repeat'
+              : 'cover',
+        }}
+      />
       <KeyboardAvoidingView
         style={{ flex: 1 }}
-        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+        behavior={
+          Platform.OS === 'ios' ? 'padding' : undefined
+        }
         keyboardVerticalOffset={insets.top + 64}
       >
+                  {/* Cohort-style header */}
+          <View
+            style={[
+              s.headerWrap,
+              { paddingTop: insets.top - 26 },
+            ]}
+          >
+            <Pressable
+              onPress={() => {
+                if (
+                  (nav as any).canGoBack?.()
+                ) {
+                  (nav as any).goBack();
+                } else {
+                  (nav as any).navigate?.(
+                    'Tabs',
+                    { screen: 'Tracker' },
+                  );
+                }
+              }}
+              style={({ pressed }) => [
+                s.backBtn,
+                pressed && { opacity: 0.85 },
+              ]}
+            >
+              <Text style={s.backIcon}>
+                {'\u25C0'}
+              </Text>
+              <Text style={s.backLabel}>
+                Back
+              </Text>
+            </Pressable>
+            <Text style={s.headerTitle}>
+              Session Tracker
+            </Text>
+            <Text style={s.sub}>
+              Log what you used and how it worked.
+            </Text>
+          </View>
+
         <ScrollView
           contentContainerStyle={s.container}
           keyboardShouldPersistTaps="handled"
         >
-          <Text style={s.title}>Session Tracker</Text>
-          <Text style={s.sub}>Log what you used and how it worked.</Text>
 
-          {/* When */}
+          {/* Date & Time */}
           <View style={s.card}>
-            <Text style={s.cardTitle}>Date & Time</Text>
+            <Text style={s.cardTitle}>
+              Date &amp; Time
+            </Text>
             <TextInput
               value={whenStr}
               onChangeText={t => {
                 const parsed = new Date(t);
-                if (!isNaN(parsed.getTime())) setWhen(parsed);
+                if (
+                  !isNaN(parsed.getTime())
+                )
+                  setWhen(parsed);
               }}
               style={[s.input, { marginTop: 8 }]}
             />
@@ -297,14 +461,25 @@ export default function SessionTrackerScreen() {
 
           {/* Methods */}
           <View style={s.card}>
-            <Text style={s.cardTitle}>Methods used</Text>
+            <Text style={s.cardTitle}>
+              Methods used
+            </Text>
             <View style={s.rowWrap}>
-              {(['capsule', 'inhalable', 'stacker', 'booster'] as MethodId[]).map(m => (
+              {(
+                [
+                  'inhalable',
+                  'capsule',
+                  'booster',
+                  'stacker',
+                ] as MethodId[]
+              ).map(m => (
                 <Chip
                   key={m}
                   label={labelForMethod(m)}
                   on={methods.includes(m)}
-                  onPress={() => toggleMethod(m)}
+                  onPress={() =>
+                    toggleMethod(m)
+                  }
                 />
               ))}
             </View>
@@ -313,31 +488,67 @@ export default function SessionTrackerScreen() {
           {/* Capsules */}
           {useCapsule && (
             <View style={s.card}>
-              <Text style={s.cardTitle}>Capsules used</Text>
+              <Text style={s.cardTitle}>
+                Capsules used
+              </Text>
               <View style={s.rowWrap}>
                 {CAPS.map(p => (
                   <Chip
                     key={p}
                     label={p}
-                    on={capProfiles.includes(p)}
-                    onPress={() => toggleCapProfile(p)}
+                    on={capProfiles.includes(
+                      p,
+                    )}
+                    onPress={() =>
+                      toggleCapProfile(p)
+                    }
                   />
                 ))}
               </View>
 
               {capProfiles.length > 0 && (
-                <View style={{ marginTop: 14 }}>
+                <View
+                  style={{ marginTop: 14 }}
+                >
                   {capProfiles.map(p => (
-                    <View key={`row-${p}`} style={s.capRow}>
-                      <Text style={s.capName}>{p}</Text>
+                    <View
+                      key={`row-${p}`}
+                      style={s.capRow}
+                    >
+                      <Text
+                        style={s.capName}
+                      >
+                        {p}
+                      </Text>
                       <Seg
-                        value={capWhen[p] ?? 'AM'}
-                        setValue={v => setDaypart(p, v as DayPart)}
-                        items={['AM', 'PM', 'Bedtime']}
+                        value={
+                          capWhen[p] ??
+                          'AM'
+                        }
+                        setValue={v =>
+                          setDaypart(
+                            p,
+                            v as DayPart,
+                          )
+                        }
+                        items={[
+                          'AM',
+                          'PM',
+                          'Bedtime',
+                        ]}
                       />
                       <Stepper
-                        value={capCounts[p] ?? 0}
-                        setValue={v => bumpCount(p, v - (capCounts[p] ?? 0))}
+                        value={
+                          capCounts[p] ?? 0
+                        }
+                        setValue={v =>
+                          bumpCount(
+                            p,
+                            v -
+                              (capCounts[p] ??
+                                0),
+                          )
+                        }
                         max={12}
                       />
                     </View>
@@ -350,55 +561,119 @@ export default function SessionTrackerScreen() {
           {/* Inhalable */}
           {useInhalable && (
             <View style={s.card}>
-              <Text style={s.cardTitle}>Inhalable details</Text>
-              <Text style={s.label}>Type</Text>
+              <Text style={s.cardTitle}>
+                Inhalable details
+              </Text>
+              <Text style={s.label}>
+                Type
+              </Text>
               <Seg
                 value={inhType}
-                setValue={v => setInhType(v as InhType)}
+                setValue={v =>
+                  setInhType(v as InhType)
+                }
                 items={['flower', 'vape', 'dab']}
               />
-              <Text style={[s.label, { marginTop: 8 }]}>Potency</Text>
+              <Text
+                style={[
+                  s.label,
+                  { marginTop: 8 },
+                ]}
+              >
+                Potency
+              </Text>
               <Seg
                 value={inhPotency}
-                setValue={v => setInhPotency(v as Potency)}
+                setValue={v =>
+                  setInhPotency(
+                    v as Potency,
+                  )
+                }
                 items={['low', 'mid', 'high']}
               />
-              <Text style={[s.label, { marginTop: 8 }]}>Puffs</Text>
-              <Stepper value={puffs} setValue={setPuffs} max={50} />
+              <Text
+                style={[
+                  s.label,
+                  { marginTop: 8 },
+                ]}
+              >
+                Puffs (per day)
+              </Text>
+              <Stepper
+                value={puffs}
+                setValue={setPuffs}
+                max={50}
+              />
             </View>
           )}
 
           {/* Sprays */}
           {(useStacker || useBooster) && (
             <View style={s.card}>
-              <Text style={s.cardTitle}>Sprays</Text>
+              <Text style={s.cardTitle}>
+                Sprays (per day)
+              </Text>
               {useStacker && (
                 <View style={s.inline}>
-                  <Text style={s.inlineLabel}>THC Stacker</Text>
-                  <Stepper value={stackerSprays} setValue={setStackerSprays} max={40} />
+                  <Text
+                    style={s.inlineLabel}
+                  >
+                    THC Stacker
+                  </Text>
+                  <Stepper
+                    value={stackerSprays}
+                    setValue={setStackerSprays}
+                    max={40}
+                  />
                 </View>
               )}
               {useBooster && (
                 <View style={s.inline}>
-                  <Text style={s.inlineLabel}>Booster (non-THC)</Text>
-                  <Stepper value={boosterSprays} setValue={setBoosterSprays} max={40} />
+                  <Text
+                    style={s.inlineLabel}
+                  >
+                    Booster (non-THC)
+                  </Text>
+                  <Stepper
+                    value={boosterSprays}
+                    setValue={setBoosterSprays}
+                    max={40}
+                  />
                 </View>
               )}
             </View>
           )}
 
-          {/* Outcomes 1–5 */}
+          {/* Outcomes */}
           <View style={s.card}>
-            <Text style={s.cardTitle}>Relief outcomes (1–5)</Text>
+            <Text style={s.cardTitle}>
+              Relief outcomes (1–5)
+            </Text>
             {OUTCOMES.map(o => (
-              <View key={o} style={{ marginBottom: 8 }}>
-                <Text style={s.outcome}>{o}</Text>
+              <View
+                key={o}
+                style={{ marginBottom: 8 }}
+              >
+                <Text style={s.outcome}>
+                  {o}
+                </Text>
                 <Seg
-                  value={String(scores[o] ?? 0)}
+                  value={String(
+                    scores[o] ?? 0,
+                  )}
                   setValue={v =>
-                    setScores(prev => ({ ...prev, [o]: Number(v) }))
+                    setScores(prev => ({
+                      ...prev,
+                      [o]: Number(v),
+                    }))
                   }
-                  items={['1', '2', '3', '4', '5']}
+                  items={[
+                    '1',
+                    '2',
+                    '3',
+                    '4',
+                    '5',
+                  ]}
                 />
               </View>
             ))}
@@ -406,10 +681,13 @@ export default function SessionTrackerScreen() {
 
           {/* Side effects */}
           <View style={s.card}>
-            <Text style={s.cardTitle}>Side effects</Text>
+            <Text style={s.cardTitle}>
+              Side effects
+            </Text>
             <View style={s.rowWrap}>
               {SE.map(o => {
-                const on = sidefx.includes(o);
+                const on =
+                  sidefx.includes(o);
                 return (
                   <Chip
                     key={o}
@@ -418,8 +696,10 @@ export default function SessionTrackerScreen() {
                     onPress={() =>
                       setSidefx(prev =>
                         prev.includes(o)
-                          ? prev.filter(x => x !== o)
-                          : [...prev, o]
+                          ? prev.filter(
+                              x => x !== o,
+                            )
+                          : [...prev, o],
                       )
                     }
                   />
@@ -430,21 +710,34 @@ export default function SessionTrackerScreen() {
 
           {/* Notes */}
           <View style={s.card}>
-            <Text style={s.cardTitle}>Notes</Text>
+            <Text style={s.cardTitle}>
+              Notes
+            </Text>
             <TextInput
               value={notes}
               onChangeText={setNotes}
               placeholder="Anything else to remember…"
               placeholderTextColor="#9FB3A8"
               multiline
-              style={[s.input, { height: 120, textAlignVertical: 'top' }]}
+              style={[
+                s.input,
+                {
+                  height: 120,
+                  textAlignVertical: 'top',
+                },
+              ]}
               returnKeyType="done"
             />
           </View>
 
           {/* Save */}
-          <Pressable onPress={save} style={s.saveBtn}>
-            <Text style={s.saveTxt}>Save session</Text>
+          <Pressable
+            onPress={save}
+            style={s.saveBtn}
+          >
+            <Text style={s.saveTxt}>
+              Save session
+            </Text>
           </Pressable>
 
           <View style={{ height: 24 }} />
@@ -454,31 +747,58 @@ export default function SessionTrackerScreen() {
   );
 }
 
-/* ---------------- styles ---------------- */
-
-const GOLD = '#C9A86A';
-const DEEP = '#0E1A16';
-const CARD = '#121F1A';
-const TEXT = '#E9EFEA';
-const MUTED = '#9FB3A8';
-
 const s = StyleSheet.create({
   safe: { flex: 1, backgroundColor: DEEP },
-  container: { padding: 16, paddingTop: 28 },
-  title: {
+  container: { padding: 16, paddingBottom: 32 },
+
+  headerWrap: {
+    paddingHorizontal: 32,
+    paddingBottom: 16,
+    borderBottomColor: '#233229',
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    backgroundColor: 'rgba(18, 31, 26, 0.9)',
+    marginHorizontal: -16,
+    marginBottom: 24,
+  },
+  backBtn: {
+    paddingHorizontal: 2,
+    paddingVertical: 8,
+    minWidth: 80,
+    flexDirection: 'row',
+    alignItems: 'center',
+    alignSelf: 'flex-start',
+    marginBottom: 0,
+  },
+  backIcon: {
+    color: GOLD,
+    fontWeight: '800',
+    fontSize: 16,
+    marginRight: 4,
+    marginBottom: 0,
+  },
+  backLabel: {
+    color: GOLD,
+    fontSize: 14,
+    fontWeight: '500',
+    marginBottom: 0,
+  },
+  headerTitle: {
     color: GOLD,
     fontSize: 26,
     fontWeight: '800',
-    marginBottom: 4,
   },
-  sub: { color: TEXT, fontSize: 14, marginBottom: 12 },
+  sub: {
+    color: TEXT,
+    fontSize: 14,
+    marginTop: 10,
+  },
 
   card: {
     backgroundColor: CARD,
     borderRadius: 14,
     padding: 14,
     borderWidth: 1,
-    borderColor: '#203129',
+    borderColor: GOLD,
     marginBottom: 12,
   },
   cardTitle: {
@@ -488,7 +808,10 @@ const s = StyleSheet.create({
     marginBottom: 8,
   },
 
-  rowWrap: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
+  rowWrap: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+  },
 
   chip: {
     borderWidth: 1,
@@ -501,24 +824,33 @@ const s = StyleSheet.create({
   },
   chipOn: { backgroundColor: GOLD },
   chipText: { color: TEXT, fontWeight: '600' },
-  chipTextOn: { color: DEEP, fontWeight: '700' },
+  chipTextOn: {
+    color: DEEP,
+    fontWeight: '700',
+  },
 
-  segRow: { flexDirection: 'row', gap: 8, marginTop: 6 },
+  segRow: { flexDirection: 'row', marginTop: 6 },
   segBtn: {
     borderWidth: 1,
     borderColor: '#2A3B33',
     borderRadius: 8,
     paddingHorizontal: 12,
     paddingVertical: 6,
+    marginRight: 8,
   },
-  segBtnOn: { backgroundColor: GOLD, borderColor: GOLD },
+  segBtnOn: {
+    backgroundColor: GOLD,
+    borderColor: GOLD,
+  },
   segLabel: { color: TEXT },
-  segLabelOn: { color: DEEP, fontWeight: '700' },
+  segLabelOn: {
+    color: DEEP,
+    fontWeight: '700',
+  },
 
   stepRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 10,
     marginTop: 8,
   },
   stepBtn: {
@@ -529,10 +861,21 @@ const s = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: 1,
-    borderColor: '#2A3B33',
+    borderColor: '#0e1813ff',
+    marginHorizontal: 10,
   },
-  stepTxt: { color: TEXT, fontSize: 20, lineHeight: 20, marginTop: -2 },
-  stepVal: { color: TEXT, width: 28, textAlign: 'center', fontWeight: '700' },
+  stepTxt: {
+    color: TEXT,
+    fontSize: 20,
+    lineHeight: 20,
+    marginTop: -2,
+  },
+  stepVal: {
+    color: TEXT,
+    width: 28,
+    textAlign: 'center',
+    fontWeight: '700',
+  },
 
   capRow: {
     borderTopWidth: 1,
@@ -540,10 +883,21 @@ const s = StyleSheet.create({
     paddingTop: 10,
     marginTop: 10,
   },
-  capName: { color: TEXT, fontWeight: '700', marginBottom: 6 },
+  capName: {
+    color: TEXT,
+    fontWeight: '700',
+    marginBottom: 6,
+  },
 
-  label: { color: TEXT, fontSize: 12, marginTop: 6 },
-  outcome: { color: TEXT, fontWeight: '600' },
+  label: {
+    color: TEXT,
+    fontSize: 12,
+    marginTop: 6,
+  },
+  outcome: {
+    color: TEXT,
+    fontWeight: '600',
+  },
 
   inline: {
     flexDirection: 'row',
@@ -551,14 +905,18 @@ const s = StyleSheet.create({
     justifyContent: 'space-between',
     marginTop: 8,
   },
-  inlineLabel: { color: TEXT, fontWeight: '600' },
+  inlineLabel: {
+    color: TEXT,
+    fontWeight: '600',
+  },
 
   input: {
-    backgroundColor: '#182721',
+    backgroundColor: '#333a3aff',
     color: TEXT,
     borderRadius: 10,
     paddingHorizontal: 12,
-    paddingVertical: Platform.OS === 'ios' ? 12 : 8,
+    paddingVertical:
+      Platform.OS === 'ios' ? 12 : 8,
     borderWidth: 1,
     borderColor: '#2A3B33',
   },
@@ -570,10 +928,12 @@ const s = StyleSheet.create({
     alignItems: 'center',
     marginTop: 6,
   },
-  saveTxt: { color: DEEP, fontWeight: '800', fontSize: 16 },
+  saveTxt: {
+    color: DEEP,
+    fontWeight: '800',
+    fontSize: 16,
+  },
 });
-
-/* ---------------- helpers ---------------- */
 
 function labelForMethod(m: MethodId) {
   switch (m) {
@@ -582,8 +942,9 @@ function labelForMethod(m: MethodId) {
     case 'inhalable':
       return 'Inhalable';
     case 'stacker':
-      return 'THC Stacker spray';
+      return 'THC Stacker';
     case 'booster':
       return 'Booster spray';
   }
+  return m;
 }

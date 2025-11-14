@@ -1,5 +1,7 @@
-import React from 'react';
-import { View, Text, StyleSheet, Pressable, Platform, Linking } from 'react-native';
+import React, { useState, useEffect, useMemo, useCallback, useRef, useLayoutEffect, useReducer, useContext } from 'react';
+import { View, Text, StyleSheet, Pressable, Platform, Linking, ImageBackground} from 'react-native';
+
+const BG = require('../../assets/bg/carta_pattern.png');
 
 export default function FindScreen() {
   const openMaps = () => {
@@ -13,11 +15,13 @@ export default function FindScreen() {
   };
 
   return (
-    <View style={s.wrap}>
+    <ImageBackground source={BG} style={{flex:1}} resizeMode="repeat" imageStyle={{opacity:0.50}}>
+<View style={s.wrap}>
       <Text style={s.title}>Find a Dispensary</Text>
       <Text style={s.note}>We’ll open your maps app with nearby results.</Text>
       <Pressable style={s.btn} onPress={openMaps}><Text style={s.btnTxt}>Open Maps</Text></Pressable>
     </View>
+</ImageBackground>
   );
 }
 

@@ -1,182 +1,175 @@
-import React from 'react';
+// app/src/screens/ProductsScreen.tsx
+import React, { useLayoutEffect } from 'react';
 import {
   View,
   Text,
   Image,
   Pressable,
   StyleSheet,
-  FlatList,
+  ScrollView,
   SafeAreaView,
+  ImageBackground,
+  Platform,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import { PRODUCTS, IMG } from './../data/products';
 
-type Nav = any;
+const BG = require('../../assets/bg/carta_pattern.png');
 
-type Product = {
-  id: string;
-  name: string;
-  subtitle?: string;
-  image: any;
-  // keep a concise details payload so details screen never says "not found"
-  cannabinoids?: string[];
-  terpenes?: string[];
-  botanicals?: string[];
-  nutrients?: string[];
-};
+const GOLD = '#C9A86A',
+  DEEP = '#0E1A16',
+  CARD = '#121F1A',
+  INK = '#E9EFEA',
+  MUTED = '#9FB3A8';
 
-const PRODUCTS: Product[] = [
-  {
-    id: 'calm_focus',
-    name: 'Calm & Focus — Capsules',
-    image: require('../../assets/products/calm_focus_daytime.png'),
-    cannabinoids: ['CBD-dominant', 'CBG (support)'],
-    terpenes: ['Limonene', 'Pinene'],
-    botanicals: ['L-Theanine', 'Rhodiola'],
-    nutrients: ['B6', 'Magnesium'],
-  },
-  {
-    id: 'mood_uplift',
-    name: 'Mood & Uplift — Capsules',
-    image: require('../../assets/products/mood_uplift_daytime.png'),
-    cannabinoids: ['CBD balanced', 'Low THC'],
-    terpenes: ['Limonene', 'Beta-Caryophyllene'],
-    botanicals: ['Saffron', '5-HTP'],
-    nutrients: ['B12', 'Folate'],
-  },
-  {
-    id: 'mobility_function',
-    name: 'Mobility & Function — Capsules',
-    image: require('../../assets/products/mobility_function.png'),
-    cannabinoids: ['CBD + CBDA'],
-    terpenes: ['Myrcene', 'Humulene'],
-    botanicals: ['Turmeric', 'Boswellia'],
-    nutrients: ['D3', 'Omega-3 (concept)'],
-  },
-  {
-    id: 'digestive_support',
-    name: 'Digestive Support — Capsules',
-    image: require('../../assets/products/digestive_support.png'),
-    cannabinoids: ['CBD', 'CBG (support)'],
-    terpenes: ['Linalool', 'Caryophyllene'],
-    botanicals: ['Ginger', 'Peppermint'],
-    nutrients: ['Electrolyte blend'],
-  },
-  {
-    id: 'metabolic_wellness',
-    name: 'Metabolic Wellness — Capsules',
-    image: require('../../assets/products/metabolic_wellness.png'),
-    cannabinoids: ['CBD'],
-    terpenes: ['Terpinolene'],
-    botanicals: ['Cinnamon', 'Berberine (concept)'],
-    nutrients: ['Chromium'],
-  },
-  {
-    id: 'mind_memory',
-    name: 'Mind & Memory — Capsules',
-    image: require('../../assets/products/mind_memory.png'),
-    cannabinoids: ['CBD + CBG'],
-    terpenes: ['Pinene', 'Limonene'],
-    botanicals: ['Ginkgo', 'Bacopa'],
-    nutrients: ['Choline'],
-  },
-  {
-    id: 'rest_restore',
-    name: 'Rest & Restore — Capsules',
-    image: require('../../assets/products/rest_restore_nighttime.png'),
-    cannabinoids: ['CBD + CBN'],
-    terpenes: ['Linalool', 'Myrcene'],
-    botanicals: ['Valerian', 'Chamomile'],
-    nutrients: ['Glycine', 'Magnesium'],
-  },
-  {
-    id: 'intimacy_caps',
-    name: 'Intimacy & Vitality — Capsules',
-    image: require('../../assets/products/intimacy_vitality_capsule.png'),
-    cannabinoids: ['CBD + THCV (low)'],
-    terpenes: ['Limonene', 'Caryophyllene'],
-    botanicals: ['Maca', 'Ginseng'],
-    nutrients: ['Zinc'],
-  },
-  {
-    id: 'thc_stacker_spray',
-    name: 'THC Stacker Spray',
-    image: require('../../assets/products/thc_stacker_spray.jpg'),
-    cannabinoids: ['THC concentrate (metered)'],
-    terpenes: ['Neutral carrier'],
-    botanicals: [],
-    nutrients: [],
-  },
-  {
-    id: 'booster_spray',
-    name: 'Universal Booster Spray',
-    image: require('../../assets/products/universal_booster_spray.jpg'),
-    cannabinoids: ['CBD broad spectrum'],
-    terpenes: ['Neutral carrier'],
-    botanicals: [],
-    nutrients: [],
-  },
-];
+function BackHeader({ title }: { title: string }) {
+  const nav = useNavigation<any>();
+  const goBack = () => {
+    if (nav.canGoBack && nav.canGoBack()) nav.goBack();
+    else nav.navigate('Tabs' as never, { screen: 'Home' } as never);
+  };
+  return (
+    <View style={styles.header}>
+      <Pressable
+        onPress={goBack}
+        style={({ pressed }) => [
+          styles.backBtn,
+          pressed && { opacity: 0.8 },
+        ]}
+      >
+        <Text style={styles.backTxt}>{'\u25C0'}</Text>
+        <Text style={styles.backLabel}>Back</Text>
+      </Pressable>
+      <Text style={styles.headerTitle}>{title}</Text>
+    </View>
+  );
+}
 
 export default function ProductsScreen() {
-  const navigation = useNavigation<Nav>();
+  const nav = useNavigation<any>();
 
-  const openDetails = (product: Product) => {
-    // Pass the full object so details can’t “miss”
-    navigation.navigate('ProductDetails', { 
-      id: item.id ?? item.key ?? item.detailsKey ?? item.slug ?? item.name,
-      product: item,
-     })
-  }
+  useLayoutEffect(() => {
+    nav.setOptions?.({ headerShown: false });
+  }, [nav]);
 
   return (
-    <SafeAreaView style={styles.safe}>
-      <FlatList
-        contentContainerStyle={styles.listContent}
-        data={PRODUCTS}
-        keyExtractor={(item) => item.id}
-        numColumns={2}
-        renderItem={({ item }) => (
-          <View style={styles.card}>
-            <Image source={item.image} style={styles.image} resizeMode="contain" />
-            <Text style={styles.name}>{item.name}</Text>
-            <Pressable style={({ pressed }) => [styles.btn, pressed && styles.btnPressed]} onPress={() => openDetails(item)}>
-              <Text style={styles.btnText}>Details</Text>
-            </Pressable>
-          </View>
-        )}
+    <SafeAreaView style={{ flex: 1, backgroundColor: DEEP }}>
+      <ImageBackground
+        source={BG}
+        style={StyleSheet.absoluteFillObject}
+        resizeMode={Platform.OS === 'ios' ? 'repeat' : 'cover'}
+        imageStyle={{ opacity: 0.5 }}
       />
+<BackHeader title="Products" />
+
+      <ScrollView contentContainerStyle={{ padding: 16, paddingBottom: 32 }}>
+        
+
+        <View style={styles.grid}>
+          {PRODUCTS.map(p => (
+            <View key={p.id} style={styles.card}>
+              <Image
+                source={IMG[p.imageKey]}
+                style={styles.hero}
+                resizeMode="contain"
+              />
+              <Text style={styles.name}>{p.name}</Text>
+              <Text style={styles.tag}>{p.tag}</Text>
+              <Pressable
+                onPress={() =>
+                  nav.navigate(
+                    'ProductDetails' as never,
+                    { productId: p.id } as never,
+                  )
+                }
+                style={({ pressed }) => [
+                  styles.btn,
+                  pressed && { opacity: 0.9 },
+                ]}
+              >
+                <Text style={styles.btnTxt}>Details</Text>
+              </Pressable>
+            </View>
+          ))}
+        </View>
+      </ScrollView>
     </SafeAreaView>
   );
 }
 
-const GOLD = '#C9A86A';
 const styles = StyleSheet.create({
-  safe: { flex: 1, backgroundColor: '#0F1A16' },
-  listContent: {
-    padding: 12,
-    paddingBottom: 24,
+  header: {
+    paddingHorizontal: 16,
+    paddingBottom: 16,
+    paddingTop: 16,
+    borderBottomColor: '#233229',
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    backgroundColor: 'rgba(18, 31, 26, 0.9)',
+    marginBottom: 16,
   },
+  backBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    alignSelf: 'flex-start',
+    marginBottom: 6,
+  },
+  backTxt: {
+    color: GOLD,
+    fontWeight: '800',
+    fontSize: 16,
+    marginRight: 4,
+    marginBottom: 4,
+  },
+  backLabel: {
+    color: GOLD,
+    fontSize: 14,
+    fontWeight: '500',
+    marginBottom: 4,
+  },
+
+  headerTitle: {
+    color: GOLD,
+    fontSize: 26,
+    fontWeight: '800',
+  },
+
+  grid: {
+    marginTop: 4,
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',
+  },
+
   card: {
-    flex: 1,
-    backgroundColor: '#15221D',
-    borderRadius: 14,
+    width: '48%',
+    backgroundColor: CARD,
     borderWidth: 1,
     borderColor: GOLD,
-    margin: 6,
-    padding: 10,
+    borderRadius: 14,
+    padding: 12,
+    marginBottom: 12,
   },
-  image: { width: '100%', height: 120, marginBottom: 8 },
-  name: { color: '#E9EFEA', fontWeight: '700', marginBottom: 8 },
+
+  hero: {
+    width: '100%',
+    height: 160,
+    borderRadius: 8,
+    marginBottom: 10,
+    backgroundColor: '#0F1713',
+  },
+
+  name: { color: INK, fontWeight: '800', marginBottom: 4 },
+  tag: { color: MUTED, marginBottom: 10 },
+
   btn: {
     alignSelf: 'flex-start',
-    backgroundColor: '#1C2B25',
-    borderColor: GOLD,
-    borderWidth: 1,
-    borderRadius: 10,
-    paddingVertical: 8,
-    paddingHorizontal: 12,
+    backgroundColor: GOLD,
+    borderRadius: 999,
+    paddingHorizontal: 18,
+    paddingVertical: 10,
   },
-  btnPressed: { opacity: 0.85 },
-  btnText: { color: '#E9EFEA', fontWeight: '600' },
+  btnTxt: {
+    color: DEEP,
+    fontWeight: '800',
+  },
 });
-
