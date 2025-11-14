@@ -7,8 +7,7 @@
     "start": "expo start",
     "android": "expo run:android",
     "ios": "expo run:ios",
-    "web": "expo start --web",
-    "eas-build-pre-install": "npm install --no-save react-native-worklets@0.6.1"
+    "web": "expo start --web"
   },
   "dependencies": {
     "@expo-google-fonts/inter": "^0.4.2",
@@ -19,13 +18,15 @@
     "@react-navigation/native": "^7.1.8",
     "@react-navigation/native-stack": "^7.3.16",
     "base-64": "^1.0.0",
+    "expo": "~54.0.23",
     "expo-asset": "~12.0.9",
-    "expo-camera": "~17.0.8",
+    "expo-camera": "~17.0.9",
     "expo-constants": "~18.0.9",
-    "expo-dev-client": "~6.0.16",
+    "expo-dev-client": "~6.0.17",
     "expo-font": "~14.0.9",
     "expo-haptics": "~15.0.7",
     "expo-image": "~3.0.10",
+    "expo-image-picker": "~17.0.8",
     "expo-linear-gradient": "~15.0.7",
     "expo-linking": "~8.0.8",
     "expo-location": "~19.0.7",
@@ -36,8 +37,9 @@
     "expo-router": "~6.0.13",
     "expo-sharing": "~14.0.7",
     "expo-splash-screen": "~31.0.10",
-    "expo-sqlite": "~16.0.8",
+    "expo-sqlite": "~16.0.9",
     "expo-status-bar": "~3.0.8",
+    "expo-updates": "~29.0.12",
     "react": "19.1.0",
     "react-dom": "19.1.0",
     "react-native": "0.81.5",
@@ -50,13 +52,15 @@
     "react-native-url-polyfill": "^3.0.0",
     "react-native-uuid": "^2.0.3",
     "react-native-webview": "13.15.0",
-    "text-encoding": "^0.7.0"
+    "react-native-worklets": "0.5.1",
+    "text-encoding": "^0.7.0",
+    "undefined": "\\"
   },
   "devDependencies": {
     "@expo/config": "^12.0.10",
     "@types/react": "~19.1.10",
     "babel-preset-expo": "^54.0.3",
-    "expo": "^54.0.21",
+    "expo": "^54.0.23",
     "typescript": "~5.9.2"
   }
 }
