@@ -29,7 +29,8 @@ const GOLD = '#C9A86A',
   INK = '#E9EFEA',
   MUTED = '#9FB0A5',
   BORDER = '#1E2B26';
-
+const HEADLINE_SERIF =
+  Platform.select({ ios: 'Palatino', android: 'serif' }) || 'serif';
 /* Product images */
 const IMAGES = {
   calm_focus_daytime: require('../../assets/products/calm_focus_daytime.png'),
@@ -556,12 +557,6 @@ export default function DosingEngineScreen() {
     capsPm = 0;
   }
 
-  // If Booster is selected along with capsules, favor Booster over
-  // a second PM capsule as the regimen scales (AM → Bedtime → PM → Booster → AM → PM).
-  if (useCapsule && useBooster && capsPm > 1) {
-    capsPm -= 1;
-  }
-
   const capsNonThc =
     (capsAm + capsPm + capsBed) *
     NTC_PER.capsule_mg;
@@ -639,11 +634,7 @@ export default function DosingEngineScreen() {
             <Text style={s.backLabel}>Back</Text>
           </Pressable>
           <Text style={s.title}>
-            Dosing Engine
-          </Text>
-          <Text style={s.subTitle}>
-            Build a chemotype-guided AM, PM, and
-            Bedtime plan within your guardrails.
+            Chemotype Guided Dosing
           </Text>
         </View>
 
@@ -658,9 +649,6 @@ export default function DosingEngineScreen() {
             marginBottom: 40,
           }}>
         
-          <Text style={s.h1}>
-            Chemotype-Guided Dosing
-          </Text>
           <Text style={s.body}>
             Select your goals & preferred methods.
             We’ll create a personalized AM, PM, and
@@ -1214,33 +1202,38 @@ const s = StyleSheet.create({
     backgroundColor: 'rgba(18, 31, 26, 0.9)',
     marginBottom: 0,
   },
-  backBtn: {
+backBtn: {
     flexDirection: 'row',
     alignItems: 'center',
     alignSelf: 'flex-start',
     marginBottom: 6,
   },
-  backIcon: {
+  backTxt: { color: GOLD, fontWeight: '800', fontFamily: HEADLINE_SERIF, fontSize: 14, marginRight: 4 },
+ backIcon: {
     color: GOLD,
-    fontSize: 16,
-    marginRight: 4,
-    marginBottom: 4,
-  },
-  backLabel: {
-    color: GOLD,
+    fontFamily: HEADLINE_SERIF, 
     fontSize: 14,
-    fontWeight: '500',
-    marginBottom: 4,
+    marginRight: 4,
+    marginBottom: 0,
   },
+   backLabel: {
+    color: GOLD,
+    fontFamily: HEADLINE_SERIF, fontSize: 15,
+    fontWeight: '500',
+    marginBottom: -4,
+  },
+
   title: {
     color: GOLD,
-    fontSize: 26,
+    fontFamily: HEADLINE_SERIF, fontSize: 32,
     fontWeight: '800',
+    textAlign: 'center'
   },
   subTitle: {
     color: INK,
-    fontSize: 14,
-    marginTop: 10,
+    fontFamily: HEADLINE_SERIF, fontSize: 15,
+    marginTop: 12,
+    textAlign: 'center'
   },
 
   content: { padding: 16, paddingBottom: 32 },

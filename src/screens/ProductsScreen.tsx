@@ -21,6 +21,11 @@ const GOLD = '#C9A86A',
   CARD = '#121F1A',
   INK = '#E9EFEA',
   MUTED = '#9FB3A8';
+  // Brand-friendly serif without extra deps
+const HEADLINE_SERIF =
+  Platform.select({ ios: 'Palatino', android: 'serif' }) || 'serif';
+
+type AnyNav = any;
 
 function BackHeader({ title }: { title: string }) {
   const nav = useNavigation<any>();
@@ -37,7 +42,7 @@ function BackHeader({ title }: { title: string }) {
           pressed && { opacity: 0.8 },
         ]}
       >
-        <Text style={styles.backTxt}>{'\u25C0'}</Text>
+        <Text style={styles.backText}>{'\u25C0'}</Text>
         <Text style={styles.backLabel}>Back</Text>
       </Pressable>
       <Text style={styles.headerTitle}>{title}</Text>
@@ -113,24 +118,26 @@ const styles = StyleSheet.create({
     alignSelf: 'flex-start',
     marginBottom: 6,
   },
-  backTxt: {
+  backText: { color: GOLD, fontWeight: '800', fontFamily: HEADLINE_SERIF, fontSize: 14, marginRight: 4 },
+ backIcon: {
     color: GOLD,
-    fontWeight: '800',
-    fontSize: 16,
-    marginRight: 4,
-    marginBottom: 4,
-  },
-  backLabel: {
-    color: GOLD,
+    fontFamily: HEADLINE_SERIF, 
     fontSize: 14,
+    marginRight: 4,
+    marginBottom: 8,
+  },
+   backLabel: {
+    color: GOLD,
+    fontFamily: HEADLINE_SERIF, fontSize: 15,
     fontWeight: '500',
-    marginBottom: 4,
+    marginBottom: -4,
   },
 
   headerTitle: {
     color: GOLD,
-    fontSize: 26,
+    fontFamily: HEADLINE_SERIF, fontSize: 32,
     fontWeight: '800',
+    textAlign: 'center'
   },
 
   grid: {
@@ -158,8 +165,8 @@ const styles = StyleSheet.create({
     backgroundColor: '#0F1713',
   },
 
-  name: { color: INK, fontWeight: '800', marginBottom: 4 },
-  tag: { color: MUTED, marginBottom: 10 },
+  name: { color: INK, fontFamily: HEADLINE_SERIF, fontWeight: '800', marginBottom: 4 },
+  tag: { color: MUTED,fontFamily: HEADLINE_SERIF,  marginBottom: 10 },
 
   btn: {
     alignSelf: 'flex-start',
@@ -170,6 +177,8 @@ const styles = StyleSheet.create({
   },
   btnTxt: {
     color: DEEP,
-    fontWeight: '800',
+    fontSize: 16,
+    fontFamily: HEADLINE_SERIF, 
+    fontWeight: '900',
   },
 });

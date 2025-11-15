@@ -25,6 +25,11 @@ const CARD = '#121F1A';
 const BORDER = '#233229';
 const TEXT = '#F5F5F5';
 const MUTED = '#9BA6A0';
+// Brand-friendly serif without extra deps
+const HEADLINE_SERIF =
+  Platform.select({ ios: 'Palatino', android: 'serif' }) || 'serif';
+
+type AnyNav = any;
 const BG: ImageSourcePropType = require('../assets/bg/carta_pattern.png');
 
 type Nav = NavigationProp<any>;
@@ -131,7 +136,8 @@ const styles = StyleSheet.create({
   },
   title: {
     color: GOLD,
-    fontSize: 30,
+    fontSize: 32,
+    fontFamily: HEADLINE_SERIF, 
     fontWeight: '700',
     marginTop: 200,
     marginBottom: 24,
@@ -139,7 +145,8 @@ const styles = StyleSheet.create({
   },
   subtitle: {
     color: TEXT,
-    fontSize: 14,
+    fontFamily: HEADLINE_SERIF, 
+    fontSize: 15,
     lineHeight: 20,
     marginBottom: 30,
     textAlign: 'center',
@@ -154,7 +161,8 @@ const styles = StyleSheet.create({
   },
   cardText: {
     color: MUTED,
-    fontSize: 14,
+    fontFamily: HEADLINE_SERIF, 
+    fontSize: 15,
     lineHeight: 20,
     marginBottom: 16,
     textAlign: 'center',
@@ -168,6 +176,7 @@ const styles = StyleSheet.create({
   },
   primaryBtnText: {
     color: DEEP,
+    fontFamily: HEADLINE_SERIF, 
     fontSize: 14,
     fontWeight: '600',
   },
@@ -181,6 +190,7 @@ const styles = StyleSheet.create({
   },
   secondaryBtnText: {
     color: TEXT,
+   fontFamily: HEADLINE_SERIF, 
     fontSize: 14,
     fontWeight: '500',
     textAlign: 'center',
@@ -192,7 +202,8 @@ const styles = StyleSheet.create({
   },
   ghostBtnText: {
     color: MUTED,
-    fontSize: 13,
+   fontFamily: HEADLINE_SERIF, 
+    fontSize: 14,
   },
 });
 

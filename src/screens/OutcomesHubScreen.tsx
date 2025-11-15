@@ -18,6 +18,11 @@ const DEEP = '#0E1A16';
 const CARD = '#121F1A';
 const INK = '#E9EFEA';
 const BORDER = '#233229';
+// Brand-friendly serif without extra deps
+const HEADLINE_SERIF =
+  Platform.select({ ios: 'Palatino', android: 'serif' }) || 'serif';
+
+type AnyNav = any;
 
 export default function OutcomesHubScreen() {
   const navigation = useNavigation<NavigationProp<any>>();
@@ -27,24 +32,24 @@ export default function OutcomesHubScreen() {
     navigation.setOptions?.({ headerShown: false });
   }, [navigation]);
 
-  const backHome = useCallback(() => {
-    const parent: any = (navigation as any).getParent?.() ?? navigation;
-    const state = parent?.getState?.();
-    const routeNames: string[] = state?.routeNames ?? [];
-    if (routeNames.includes?.('Home')) {
-      try {
-        parent.navigate('Home');
-        return;
-      } catch {}
-    }
-    try {
-      (navigation as any).navigate('Tabs', { screen: 'Home' });
-      return;
-    } catch {}
-    try {
-      (navigation as any).navigate('Home');
-    } catch {}
-  }, [navigation]);
+ const backHome = useCallback(() => {
+     const parent: any = (navigation as any).getParent?.() ?? navigation;
+     const state = parent?.getState?.();
+     const routeNames: string[] = state?.routeNames ?? [];
+     if (routeNames.includes?.('Home')) {
+       try {
+         parent.navigate('Home');
+         return;
+       } catch {}
+     }
+     try {
+       (navigation as any).navigate('Tabs', { screen: 'Home' });
+       return;
+     } catch {}
+     try {
+       (navigation as any).navigate('Home');
+     } catch {}
+   }, [navigation]);
 
   return (
     <SafeAreaView style={s.safe} edges={['top', 'left', 'right']}>
@@ -57,13 +62,13 @@ export default function OutcomesHubScreen() {
       />
  <View style={s.header}>
           <Pressable
-            onPress={backHome}
-            hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-            style={({ pressed }) => [s.backBtn, pressed && { opacity: 0.85 }]}
-          >
-            <Text style={s.backIcon}>{'\u25C0'}</Text>
-            <Text style={s.backLabel}>Back</Text>
-          </Pressable>
+                      onPress={backHome}
+                      hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+                      style={s.backBtn}
+                    >
+                      <Text style={s.backText}>{'\u25C0'}</Text>
+                      <Text style={s.backLabel}>Back</Text>
+                    </Pressable>
           <Text style={s.title}>Outcome Tracking</Text>
           <Text style={s.subTitle}>
             Log sessions and quick check-ins, then turn them into ATI trends and
@@ -136,31 +141,38 @@ const s = StyleSheet.create({
     marginHorizontal: -2,
     marginBottom: 24,
   },
-  backBtn: {
-    paddingVertical: 8,
-    paddingHorizontal: 2,
+    backBtn: {
     flexDirection: 'row',
     alignItems: 'center',
-    alignSelf: 'flex-start',
     marginBottom: 6,
+    alignSelf: 'flex-start',
   },
-  backIcon: {
+backText: {
     color: GOLD,
-    fontSize: 16,
+    fontFamily: HEADLINE_SERIF, 
+    fontSize: 14,
     marginRight: 4,
-    marginBottom: 4,
+    marginBottom: 4
   },
   backLabel: {
     color: GOLD,
-    fontWeight: '900',
-    fontSize: 16,
-    marginBottom: 4,
+    fontFamily: HEADLINE_SERIF, fontSize: 15,
+    fontWeight: '500',
+    marginBottom: 0,
   },
-  title: { color: GOLD, fontSize: 26, fontWeight: '800' },
+
+  title: {
+    color: GOLD,
+    fontFamily: HEADLINE_SERIF, fontSize: 32,
+    fontWeight: '800',
+    textAlign: 'center'
+  },
   subTitle: {
     color: INK,
-    fontSize: 14,
+    fontSize: 15,
     marginTop: 10,
+    fontFamily: HEADLINE_SERIF, 
+    textAlign: 'center'
   },
 
   grid: { gap: 20, alignItems: 'center', marginTop: 8 },
@@ -175,11 +187,13 @@ const s = StyleSheet.create({
     width: '80%',
     maxWidth: 520,
   },
-  btnTxt: { color: INK, fontSize: 19, fontWeight: '800', textAlign: 'center' },
+  btnTxt: { color: INK, fontFamily: HEADLINE_SERIF, fontSize: 20, fontWeight: '800', textAlign: 'center' },
   blurb: {
     color: INK,
     opacity: 0.85,
     textAlign: 'center',
+    fontSize: 15,
+    fontFamily: HEADLINE_SERIF,
     fontWeight: '600',
     marginTop: -2,
     marginBottom: 40,
@@ -188,6 +202,6 @@ const s = StyleSheet.create({
     marginTop: 8,
     padding: 14,
   },
-  rTitle: { color: GOLD, fontSize: 16, fontWeight: '800', marginBottom: 6 },
-  rBody: { color: INK, opacity: 0.9, lineHeight: 20, fontWeight: '600' },
+  rTitle: { color: GOLD, fontFamily: HEADLINE_SERIF, fontSize: 17, fontWeight: '800', marginBottom: 6 },
+  rBody: { color: INK, opacity: 0.9, lineHeight: 20, fontSize: 15, fontFamily: HEADLINE_SERIF, fontWeight: '600' },
 });

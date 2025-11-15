@@ -7,6 +7,11 @@ import { PRODUCTS_BY_ID, PRODUCT_DETAILS, IMG } from './../data/products';
 const BG = require('../../assets/bg/carta_pattern.png');
 
 const GOLD = '#C9A86A', DEEP = '#0E1A16', CARD = '#121F1A', INK = '#E9EFEA', MUTED = '#9FB3A8';
+// Brand-friendly serif without extra deps
+const HEADLINE_SERIF =
+  Platform.select({ ios: 'Palatino', android: 'serif' }) || 'serif';
+
+type AnyNav = any;
 
 export default function ProductDetailsScreen() {
   const route = useRoute<any>();
@@ -79,11 +84,11 @@ const s = StyleSheet.create({
   safe: { flex: 1, backgroundColor: DEEP },
   card: { backgroundColor: CARD, borderColor: GOLD, borderWidth: 1, borderRadius: 14, padding: 14, marginBottom: 12 },
   hero: { width: '100%', height: 280, borderRadius: 10, marginBottom: 12, backgroundColor: '#0F1713' },
-  name: { color: INK, fontSize: 20, fontWeight: '800' },
-  tag: { color: MUTED, marginBottom: 8 },
-  title: { color: GOLD, fontSize: 18, fontWeight: '800', marginBottom: 6 },
-  heading: { color: GOLD, fontSize: 16, fontWeight: '800', marginBottom: 8 },
+  name: { color: INK, fontFamily: HEADLINE_SERIF, fontSize: 20, fontWeight: '800' },
+  tag: { color: MUTED, fontFamily: HEADLINE_SERIF, marginBottom: 8 },
+  title: { color: GOLD, fontFamily: HEADLINE_SERIF, fontSize: 18, fontWeight: '800', marginBottom: 6 },
+  heading: { color: GOLD, fontFamily: HEADLINE_SERIF, fontSize: 16, fontWeight: '800', marginBottom: 8 },
   k: { color: GOLD, fontWeight: '700' },
-  body: { color: INK, marginTop: 6 },
-  item: { color: INK, marginBottom: 6 },
+  body: { color: INK, fontFamily: HEADLINE_SERIF, marginTop: 6 },
+  item: { color: INK, fontFamily: HEADLINE_SERIF, marginBottom: 6 },
 });

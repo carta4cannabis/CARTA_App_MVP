@@ -28,6 +28,11 @@ const CARD = '#121F1A';
 const INK = '#E9EFEA';
 const BORDER = '#233229';
 const TEXT = '#F5F5F5';
+// Brand-friendly serif without extra deps
+const HEADLINE_SERIF =
+  Platform.select({ ios: 'Palatino', android: 'serif' }) || 'serif';
+
+type AnyNav = any;
 
 type TabsParamList = {
   Scanner: undefined;
@@ -154,7 +159,7 @@ export default function ToolsHubScreen() {
               ) : null}
             </Pressable>
             <Text style={s.blurb}>
-              Build a clinician-ready summary for                                            this user’s recent sessions.
+              Build a clinician-ready summary for this user’s recent sessions.
             </Text>
 
             {/* Cultivar Profile Matching */}
@@ -167,7 +172,7 @@ export default function ToolsHubScreen() {
               <Text style={s.btnTxt}>Profile Matching</Text>
             </Pressable>
             <Text style={s.blurb}>
-              Plug in a cultivar/strain COA (or scan its QR) to see                                chemotype and
+              Plug in a cultivar/strain COA (or scan its QR) to see chemotype and
               CARTA profile fit.
             </Text>
 
@@ -179,7 +184,7 @@ export default function ToolsHubScreen() {
               <Text style={s.btnTxt}>My Cultivars (COA Library)</Text>
             </Pressable>
             <Text style={s.blurb}>
-              Save strains with photos, notes, and ratings                                to keep your COA
+              Save strains with photos, notes, and ratings to keep your COA
               library organized.
             </Text>
 
@@ -191,8 +196,7 @@ export default function ToolsHubScreen() {
               <Text style={s.btnTxt}>Cohort View</Text>
             </Pressable>
             <Text style={s.blurb}>
-              See how your saved cultivars perform across CARTA therapeutic
-              profiles.
+              See how your saved cultivars perform across CARTA therapeutic profiles.
             </Text>
 
             {/* Existing tools */}
@@ -201,7 +205,7 @@ export default function ToolsHubScreen() {
               onPress={() => goTab('Scanner')}
             />
             <Text style={s.blurb}>
-              Scan product labels and COA-enabled                                           QR codes for instant details.
+              Scan product labels and COA-enabled QR codes for instant details.
             </Text>
 
             <HubButton
@@ -256,26 +260,31 @@ const s = StyleSheet.create({
   },
   backText: {
     color: GOLD,
+    fontFamily: HEADLINE_SERIF, 
     fontSize: 14,
     marginRight: 4,
-    marginBottom: 8,
+    marginBottom: 4
   },
   backLabel: {
     color: GOLD,
-    fontSize: 14,
+    fontFamily: HEADLINE_SERIF, fontSize: 15,
     fontWeight: '500',
-    marginBottom: 8,
+    marginBottom: 0,
   },
+
   title: {
     color: GOLD,
-    fontSize: 26,
-    fontWeight: '700',
+    fontFamily: HEADLINE_SERIF, fontSize: 32,
+    fontWeight: '800',
+    textAlign: 'center'
   },
   subTitle: {
     color: TEXT,
+    fontFamily: HEADLINE_SERIF, 
     fontSize: 16,
     marginTop: 14,
     marginBottom: 2,
+    textAlign: 'center'
   },
   body: {
     flex: 1,
@@ -301,7 +310,8 @@ const s = StyleSheet.create({
   },
   btnTxt: {
     color: INK,
-    fontSize: 19,
+    fontFamily: HEADLINE_SERIF, 
+    fontSize: 20,
     fontWeight: '800',
     textAlign: 'center',
   },
@@ -314,7 +324,9 @@ const s = StyleSheet.create({
   blurb: {
     color: INK,
     opacity: 0.85,
+    fontFamily: HEADLINE_SERIF, 
     textAlign: 'center',
+    fontSize: 15,
     fontWeight: '600',
     marginTop: -2,
     marginBottom: 32,

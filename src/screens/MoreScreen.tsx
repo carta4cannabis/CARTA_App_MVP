@@ -17,6 +17,11 @@ const BG = require('../../assets/bg/carta_pattern.png');
 const GOLD = '#C9A86A';
 const DEEP = '#0E1A16';
 const CARD = '#121F1A';
+// Brand-friendly serif without extra deps
+const HEADLINE_SERIF =
+  Platform.select({ ios: 'Palatino', android: 'serif' }) || 'serif';
+
+type AnyNav = any;
 
 function BackHeader({ title }: { title: string }) {
   const nav = useNavigation<any>();
@@ -32,7 +37,7 @@ function BackHeader({ title }: { title: string }) {
         onPress={() => nav.goBack()}
         style={({ pressed }) => [s.backBtn, pressed && { opacity: 0.8 }]}
       >
-        <Text style={s.backIcon}>{'\u25C0'}</Text>
+        <Text style={s.backText}>{'\u25C0'}</Text>
         <Text style={s.backLabel}>Back</Text>
       </Pressable>
       <Text style={s.headerTitle}>{title}</Text>
@@ -130,16 +135,26 @@ const s = StyleSheet.create({
     alignSelf: 'flex-start',
     marginBottom: 4,
   },
-  backIcon: {
+  backText: {
     color: GOLD,
-    fontSize: 20,
-    lineHeight: 20,
+    fontFamily: HEADLINE_SERIF, 
+    fontSize: 14,
     marginRight: 4,
-    marginBottom: 4,
+    marginBottom: 8
   },
-  backLabel: { color: GOLD, fontSize: 16, fontWeight: '800', marginBottom: 4 },
-  headerTitle: { color: GOLD, fontSize: 26, fontWeight: '800', marginTop: 2 },
+  backLabel: {
+    color: GOLD,
+    fontFamily: HEADLINE_SERIF, fontSize: 15,
+    fontWeight: '500',
+    marginBottom: 0,
+  },
 
+  headerTitle: {
+    color: GOLD,
+    fontFamily: HEADLINE_SERIF, fontSize: 32,
+    fontWeight: '800',
+    textAlign: 'center'
+  },
   content: { paddingHorizontal: 16 },
   card: {
     backgroundColor: CARD,
@@ -151,11 +166,11 @@ const s = StyleSheet.create({
   },
   h1: {
     color: '#E9EFEA',
-    fontSize: 18,
+    fontFamily: HEADLINE_SERIF, fontSize: 18,
     fontWeight: '700',
     marginBottom: 8,
   },
-  body: { color: '#DCE7E2', marginTop: 4, lineHeight: 20 },
+  body: { color: '#DCE7E2', fontFamily: HEADLINE_SERIF, marginTop: 4, lineHeight: 20 },
   bold: { fontWeight: '700' },
   link: {
     marginTop: 10,
@@ -166,5 +181,5 @@ const s = StyleSheet.create({
     borderColor: '#1d3a21ff',
     backgroundColor: GOLD,
   },
-  linkText: { color: DEEP, fontWeight: '600' },
+  linkText: { color: DEEP, fontFamily: HEADLINE_SERIF, fontWeight: '600' },
 });

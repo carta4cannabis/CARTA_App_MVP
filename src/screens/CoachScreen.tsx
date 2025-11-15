@@ -30,6 +30,11 @@ const DEEP = '#0E1A16';
 const CARD = '#121F1A';
 const TEXT = '#E9EFEA';
 const MUTED = '#9FB0A8';
+// Brand-friendly serif without extra deps
+const HEADLINE_SERIF =
+  Platform.select({ ios: 'Palatino', android: 'serif' }) || 'serif';
+
+type AnyNav = any;
 
 type Session = {
   dateTime?: string;
@@ -393,29 +398,30 @@ const st = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     alignSelf: 'flex-start',
-    marginBottom: 10,
+    marginBottom: 6,
   },
-  backTxt: { color: GOLD, fontWeight: '800', fontSize: 16, marginRight: 4 },
+  backTxt: { color: GOLD, fontWeight: '800', fontFamily: HEADLINE_SERIF, fontSize: 14, marginRight: 4 },
  backIcon: {
     color: GOLD,
-    fontSize: 16,
-    marginRight: 4,
-    marginBottom: 4,
-  },
-  backLabel: {
-    color: GOLD,
+    fontFamily: HEADLINE_SERIF, 
     fontSize: 14,
+    marginRight: 4,
+    marginBottom: 8,
+  },
+   backLabel: {
+    color: GOLD,
+    fontFamily: HEADLINE_SERIF, fontSize: 15,
     fontWeight: '500',
-    marginBottom: 2,
+    marginBottom: -4,
   },
 
   title: {
     color: GOLD,
-    fontSize: 26,
+    fontFamily: HEADLINE_SERIF, fontSize: 32,
     fontWeight: '800',
-    
+    textAlign: 'center'
   },
-  sub: { color: TEXT, marginTop: 10 },
+  sub: { color: TEXT, fontSize: 15, fontFamily: HEADLINE_SERIF, marginTop: 10, textAlign: 'center'},
 
   card: {
     backgroundColor: CARD,
@@ -426,13 +432,14 @@ const st = StyleSheet.create({
   },
   cardTitle: {
     color: GOLD,
+    fontFamily: HEADLINE_SERIF, 
     fontSize: 16,
     fontWeight: '800',
     marginBottom: 14,
   },
-  kv: { color: TEXT, marginBottom: 6 },
-  k: { color: '#BFC7C2' },
-  v: { color: GOLD, fontWeight: '700' },
+  kv: { color: TEXT, fontFamily: HEADLINE_SERIF, marginBottom: 6 },
+  k: { fontFamily: HEADLINE_SERIF, color: '#BFC7C2' },
+  v: { color: GOLD, fontFamily: HEADLINE_SERIF, fontWeight: '700' },
   row: { flexDirection: 'row', marginTop: 16 },
   btn: {
     borderWidth: 1,
@@ -442,7 +449,7 @@ const st = StyleSheet.create({
     paddingHorizontal: 14,
     backgroundColor: '#1C2B25',
   },
-  btnTxt: { color: TEXT, fontWeight: '700' },
-  tip: { color: TEXT, marginTop: 12, lineHeight: 20 },
-  hint: { color: MUTED, marginTop: 4, fontStyle: 'italic' },
+  btnTxt: { color: TEXT, fontFamily: HEADLINE_SERIF,  fontWeight: '700' },
+  tip: { color: TEXT, fontFamily: HEADLINE_SERIF,  marginTop: 12, lineHeight: 20 },
+  hint: { color: MUTED, fontFamily: HEADLINE_SERIF,  marginTop: 4, fontStyle: 'italic' },
 });

@@ -31,7 +31,11 @@ const GOLD = '#C9A86A';
 const DEEP = '#0E1A16';
 const CARD = '#121F1A';
 const TEXT = '#E9EFEA';
+// Brand-friendly serif without extra deps
+const HEADLINE_SERIF =
+  Platform.select({ ios: 'Palatino', android: 'serif' }) || 'serif';
 
+type AnyNav = any;
 /* types */
 type MethodId = 'capsule' | 'inhalable' | 'stacker' | 'booster';
 type CapsuleProfile =
@@ -421,7 +425,7 @@ export default function SessionTrackerScreen() {
                 pressed && { opacity: 0.85 },
               ]}
             >
-              <Text style={s.backIcon}>
+              <Text style={s.backText}>
                 {'\u25C0'}
               </Text>
               <Text style={s.backLabel}>
@@ -761,36 +765,37 @@ const s = StyleSheet.create({
     marginBottom: 24,
   },
   backBtn: {
-    paddingHorizontal: 2,
-    paddingVertical: 8,
-    minWidth: 80,
     flexDirection: 'row',
     alignItems: 'center',
     alignSelf: 'flex-start',
-    marginBottom: 0,
+    marginBottom: 6,
   },
-  backIcon: {
+  backText: { color: GOLD, fontWeight: '800', fontFamily: HEADLINE_SERIF, fontSize: 14, marginRight: 4 },
+ backIcon: {
     color: GOLD,
-    fontWeight: '800',
-    fontSize: 16,
-    marginRight: 4,
-    marginBottom: 0,
-  },
-  backLabel: {
-    color: GOLD,
+    fontFamily: HEADLINE_SERIF, 
     fontSize: 14,
-    fontWeight: '500',
-    marginBottom: 0,
+    marginRight: 4,
+    marginBottom: 8,
   },
+   backLabel: {
+    color: GOLD,
+    fontFamily: HEADLINE_SERIF, fontSize: 15,
+    fontWeight: '500',
+    marginBottom: -4,
+  },
+
   headerTitle: {
     color: GOLD,
-    fontSize: 26,
+    fontFamily: HEADLINE_SERIF, fontSize: 32,
     fontWeight: '800',
+    textAlign: 'center'
   },
   sub: {
     color: TEXT,
-    fontSize: 14,
+    fontFamily: HEADLINE_SERIF, fontSize: 15,
     marginTop: 10,
+    textAlign: 'center'
   },
 
   card: {
@@ -803,7 +808,7 @@ const s = StyleSheet.create({
   },
   cardTitle: {
     color: GOLD,
-    fontSize: 16,
+    fontFamily: HEADLINE_SERIF, fontSize: 16,
     fontWeight: '700',
     marginBottom: 8,
   },
@@ -823,10 +828,10 @@ const s = StyleSheet.create({
     marginBottom: 8,
   },
   chipOn: { backgroundColor: GOLD },
-  chipText: { color: TEXT, fontWeight: '600' },
+  chipText: { color: TEXT, fontFamily: HEADLINE_SERIF, fontWeight: '600' },
   chipTextOn: {
     color: DEEP,
-    fontWeight: '700',
+    fontFamily: HEADLINE_SERIF, fontWeight: '700',
   },
 
   segRow: { flexDirection: 'row', marginTop: 6 },
@@ -842,10 +847,10 @@ const s = StyleSheet.create({
     backgroundColor: GOLD,
     borderColor: GOLD,
   },
-  segLabel: { color: TEXT },
+  segLabel: { fontFamily: HEADLINE_SERIF, color: TEXT },
   segLabelOn: {
     color: DEEP,
-    fontWeight: '700',
+    fontFamily: HEADLINE_SERIF, fontWeight: '700',
   },
 
   stepRow: {
@@ -866,7 +871,7 @@ const s = StyleSheet.create({
   },
   stepTxt: {
     color: TEXT,
-    fontSize: 20,
+    fontFamily: HEADLINE_SERIF, fontSize: 20,
     lineHeight: 20,
     marginTop: -2,
   },
@@ -874,7 +879,7 @@ const s = StyleSheet.create({
     color: TEXT,
     width: 28,
     textAlign: 'center',
-    fontWeight: '700',
+    fontFamily: HEADLINE_SERIF, fontWeight: '700',
   },
 
   capRow: {
@@ -885,18 +890,18 @@ const s = StyleSheet.create({
   },
   capName: {
     color: TEXT,
-    fontWeight: '700',
+    fontFamily: HEADLINE_SERIF, fontWeight: '700',
     marginBottom: 6,
   },
 
   label: {
     color: TEXT,
-    fontSize: 12,
+    fontFamily: HEADLINE_SERIF, fontSize: 12,
     marginTop: 6,
   },
   outcome: {
     color: TEXT,
-    fontWeight: '600',
+    fontFamily: HEADLINE_SERIF, fontWeight: '600',
   },
 
   inline: {
@@ -907,13 +912,13 @@ const s = StyleSheet.create({
   },
   inlineLabel: {
     color: TEXT,
-    fontWeight: '600',
+    fontFamily: HEADLINE_SERIF, fontWeight: '600',
   },
 
   input: {
     backgroundColor: '#333a3aff',
     color: TEXT,
-    borderRadius: 10,
+    fontFamily: HEADLINE_SERIF, borderRadius: 10,
     paddingHorizontal: 12,
     paddingVertical:
       Platform.OS === 'ios' ? 12 : 8,
@@ -930,7 +935,7 @@ const s = StyleSheet.create({
   },
   saveTxt: {
     color: DEEP,
-    fontWeight: '800',
+   fontFamily: HEADLINE_SERIF,  fontWeight: '800',
     fontSize: 16,
   },
 });

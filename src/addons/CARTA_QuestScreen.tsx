@@ -13,6 +13,8 @@ import {
 import { useNavigation } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 const BG = require('../../assets/bg/carta_pattern.png');
+const HEADLINE_SERIF =
+  Platform.select({ ios: 'Palatino', android: 'serif' }) || 'serif';
 import {
   initQuestDb,
   loadQuests,
@@ -31,7 +33,7 @@ const COLORS = {
   TEXT: '#E9EFEA',
   MUTED: '#9FB3A8',
 };
-
+const GOLD = '#C9A86A';
 const Card = (p: any) => (
   <View
     style={{
@@ -63,10 +65,10 @@ function BackHeader({ title }: { title: string }) {
           pressed && { opacity: 0.8 },
         ]}
       >
-        <Text style={st.backIcon}>{'\u25C0'}</Text>
-        <Text style={st.backTxt}>Back</Text>
+        <Text style={st.backText}>{'\u25C0'}</Text>
+        <Text style={st.backLabel}>Back</Text>
       </Pressable>
-      <Text style={st.headerTitle}>{title}</Text>
+      <Text style={st.title}>{title}</Text>
     </View>
   );
 }
@@ -135,10 +137,11 @@ export default function CARTA_QuestScreen() {
         }}
       >
         <Text
-          style={{ color: COLORS.TEXT, marginBottom: 40 }}
-        >
-          Learn, log, and level up your knowledge and
-          consistency.
+          style={{ color: COLORS.TEXT, marginTop: 16, marginBottom: 14, fontSize: 15 }}>
+          CARTA Quest turns learning into action. Each day you’ll get small, clinician-guided challenges — read a quick lesson, try a dosing tip, log a check-in, or practice a recovery habit. 
+         </Text>
+         <Text style={{ color: COLORS.TEXT, marginBottom: 40, fontSize: 15 }} >
+          Complete quests to build streaks, earn badges, and unlock deeper guidance tailored by your Adaptive Therapeutic Index (ATI). The more consistently you engage, the smarter your recommendations become — helping you refine AM/PM/Bedtime routines, understand what works for your body, and turn insights into steady, real-world results.
         </Text>
 
         <Card
@@ -324,21 +327,25 @@ const st = StyleSheet.create({
     alignSelf: 'flex-start',
     marginBottom: 6,
   },
-  backIcon: {
-    color: COLORS.GOLD,
+  backText: { color: GOLD, fontWeight: '800', fontFamily: HEADLINE_SERIF, fontSize: 14, marginRight: 4 },
+ backIcon: {
+    color: GOLD,
+    fontFamily: HEADLINE_SERIF, 
     fontSize: 14,
     marginRight: 4,
     marginBottom: 8,
   },
-  backTxt: {
-    color: COLORS.GOLD,
-    fontSize: 14,
+   backLabel: {
+    color: GOLD,
+    fontFamily: HEADLINE_SERIF, fontSize: 15,
     fontWeight: '500',
-    marginBottom: 8,
+    marginBottom: -4,
   },
-  headerTitle: {
-    color: COLORS.GOLD,
-    fontSize: 26,
+
+  title: {
+    color: GOLD,
+    fontFamily: HEADLINE_SERIF, fontSize: 32,
     fontWeight: '800',
+    textAlign: 'center'
   },
 });

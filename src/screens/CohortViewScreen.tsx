@@ -25,6 +25,11 @@ const CARD = '#121F1A';
 const BORDER = '#233229';
 const TEXT = '#F5F5F5';
 const MUTED = '#9BA6A0';
+// Brand-friendly serif without extra deps
+const HEADLINE_SERIF =
+  Platform.select({ ios: 'Palatino', android: 'serif' }) || 'serif';
+
+type AnyNav = any;
 const BG: ImageSourcePropType = require('../assets/bg/carta_pattern.png');
 
 type Nav = NavigationProp<any>;
@@ -251,33 +256,37 @@ const styles = StyleSheet.create({
   },
   backText: {
     color: GOLD,
+    fontFamily: HEADLINE_SERIF, 
     fontSize: 14,
     marginRight: 4,
-    marginBottom: 8
+    marginBottom: 4
   },
   backLabel: {
     color: GOLD,
-    fontSize: 14,
+    fontFamily: HEADLINE_SERIF, fontSize: 15,
     fontWeight: '500',
-    marginBottom: 8
+    marginBottom: 0,
   },
+
   title: {
     color: GOLD,
-    fontSize: 26,
-    fontWeight: '700',
+    fontFamily: HEADLINE_SERIF, fontSize: 32,
+    fontWeight: '800',
+    textAlign: 'center'
   },
-  subTitle: { color: TEXT, fontSize: 16, marginTop: 14, marginBottom: 2 },
-  body: { flex: 1, paddingHorizontal: 16, paddingTop: 8 },
+  subTitle: { color: TEXT, fontFamily: HEADLINE_SERIF, fontSize: 16, marginTop: 14, marginBottom: 2, textAlign: 'center' },
+  body: { flex: 1, fontFamily: HEADLINE_SERIF, paddingHorizontal: 16, paddingTop: 8 },
   summaryStrip: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     marginTop: 12,
     marginBottom: 8,
   },
-  summaryText: { color: MUTED, fontSize: 15 },
-  summaryNumber: { color: GOLD, fontWeight: '600' },
+  summaryText: { color: TEXT, fontFamily: HEADLINE_SERIF, fontSize: 15 },
+  summaryNumber: { color: GOLD, fontFamily: HEADLINE_SERIF, fontWeight: '600' },
   placeholder: {
     color: MUTED,
+    fontFamily: HEADLINE_SERIF, 
     fontSize: 15,
     marginTop: 12,
   },
@@ -289,17 +298,17 @@ const styles = StyleSheet.create({
     borderColor: BORDER,
     marginBottom: 10,
   },
-  cardTitle: { color: TEXT, fontSize: 15, fontWeight: '600' },
-  cardMeta: { color: MUTED, fontSize: 14, marginBottom: 8, marginTop: 2 },
+  cardTitle: { color: TEXT, fontFamily: HEADLINE_SERIF, fontSize: 15, fontWeight: '600' },
+  cardMeta: { color: MUTED, fontFamily: HEADLINE_SERIF, fontSize: 14, marginBottom: 8, marginTop: 2 },
   row: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     marginTop: 4,
   },
   metric: { width: '48%' },
-  metricLabel: { color: MUTED, fontSize: 13, marginBottom: 2 },
-  metricValue: { color: TEXT, fontSize: 15, fontWeight: '600' },
-  hint: { color: MUTED, fontSize: 13, marginTop: 8 },
+  metricLabel: { color: MUTED, fontFamily: HEADLINE_SERIF, fontSize: 13, marginBottom: 2 },
+  metricValue: { color: TEXT, fontFamily: HEADLINE_SERIF, fontSize: 15, fontWeight: '600' },
+  hint: { color: MUTED, fontFamily: HEADLINE_SERIF, fontSize: 13, marginTop: 8 },
 });
 
 export default CohortViewScreen;

@@ -34,6 +34,11 @@ const CARD = '#121F1A';
 const TEXT = '#F5F5F5';
 const MUTED = '#9BA6A0';
 const BORDER = '#233229';
+// Brand-friendly serif without extra deps
+const HEADLINE_SERIF =
+  Platform.select({ ios: 'Palatino', android: 'serif' }) || 'serif';
+
+type AnyNav = any;
 const BG: ImageSourcePropType = require('../assets/bg/carta_pattern.png');
 
 type Nav = NavigationProp<any>;
@@ -473,7 +478,7 @@ const CultivarProfileMatchingScreen: React.FC = () => {
             <Text style={styles.backText}>{'\u25C0'}</Text>
             <Text style={styles.backLabel}> Back</Text>
           </Pressable>
-          <Text style={styles.title}>Cultivar/Strain Profile Matching</Text>
+          <Text style={styles.title}>Cultivar Profile Matching</Text>
         </View>
 
         <ScrollView
@@ -738,20 +743,23 @@ const styles = StyleSheet.create({
   },
   backText: {
     color: GOLD,
+    fontFamily: HEADLINE_SERIF, 
     fontSize: 14,
     marginRight: 4,
-    marginBottom: 8
+    marginBottom: 4
   },
   backLabel: {
     color: GOLD,
-    fontSize: 14,
+    fontFamily: HEADLINE_SERIF, fontSize: 15,
     fontWeight: '500',
-    marginBottom: 8
+    marginBottom: 0,
   },
+
   title: {
     color: GOLD,
-    fontSize: 26,
-    fontWeight: '700',
+    fontFamily: HEADLINE_SERIF, fontSize: 32,
+    fontWeight: '800',
+    textAlign: 'center'
   },
   scroll: {
     flex: 1,
@@ -771,19 +779,19 @@ const styles = StyleSheet.create({
   },
   introTitle: {
     color: TEXT,
-    fontSize: 18,
+    fontFamily: HEADLINE_SERIF, fontSize: 20,
     fontWeight: '600',
     marginBottom: 12,
   },
   introText: {
     color: TEXT,
-    fontSize: 14,
+   fontFamily: HEADLINE_SERIF,  fontSize: 15,
     lineHeight: 20,
     marginBottom: 8,
   },
   hint: {
     color: MUTED,
-    fontSize: 12,
+    fontFamily: HEADLINE_SERIF, fontSize: 13,
     marginBottom: 14,
   },
   scanBtn: {
@@ -797,17 +805,18 @@ const styles = StyleSheet.create({
   },
   scanBtnText: {
     color: GOLD,
-    fontSize: 12,
+   fontFamily: HEADLINE_SERIF,  fontSize: 13,
     fontWeight: '600',
   },
   section: {
     marginBottom: 16,
   },
   sectionTitle: {
-    color: TEXT,
-    fontSize: 15,
+    color: GOLD,
+   fontFamily: HEADLINE_SERIF,  fontSize: 16,
     fontWeight: '600',
     marginBottom: 14,
+    marginTop: 12
   },
   grid: {
     flexDirection: 'row',
@@ -818,8 +827,8 @@ const styles = StyleSheet.create({
     width: '48%',
   },
   inputLabel: {
-    color: MUTED,
-    fontSize: 13,
+    color: TEXT,
+    fontFamily: HEADLINE_SERIF, fontSize: 15,
     marginBottom: 4,
   },
   smallInput: {
@@ -830,7 +839,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     paddingVertical: 8,
     color: TEXT,
-    fontSize: 14,
+    fontFamily: HEADLINE_SERIF, fontSize: 14,
   },
   resultCard: {
     backgroundColor: CARD,
@@ -842,7 +851,7 @@ const styles = StyleSheet.create({
   },
   resultTitle: {
     color: GOLD,
-    fontSize: 15,
+    fontFamily: HEADLINE_SERIF, fontSize: 15,
     fontWeight: '700',
     marginBottom: 12,
   },
@@ -851,12 +860,12 @@ const styles = StyleSheet.create({
   },
   resultLabel: {
     color: MUTED,
-    fontSize: 12,
+    fontFamily: HEADLINE_SERIF, fontSize: 12,
     marginBottom: 2,
   },
   resultValue: {
     color: TEXT,
-    fontSize: 14,
+    fontFamily: HEADLINE_SERIF, fontSize: 14,
     fontWeight: '500',
   },
   subSection: {
@@ -864,18 +873,18 @@ const styles = StyleSheet.create({
   },
   subTitle: {
     color: TEXT,
-    fontSize: 13,
+    fontFamily: HEADLINE_SERIF, fontSize: 13,
     fontWeight: '600',
     marginBottom: 4,
   },
   profileLine: {
     color: TEXT,
-    fontSize: 13,
+   fontFamily: HEADLINE_SERIF,  fontSize: 13,
     marginBottom: 2,
   },
   rationale: {
     color: TEXT,
-    fontSize: 13,
+    fontFamily: HEADLINE_SERIF, fontSize: 13,
     lineHeight: 20,
   },
   placeholder: {
@@ -884,7 +893,7 @@ const styles = StyleSheet.create({
   },
   placeholderText: {
     color: MUTED,
-    fontSize: 13,
+   fontFamily: HEADLINE_SERIF,  fontSize: 15,
     lineHeight: 18,
   },
   input: {
@@ -895,12 +904,12 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     paddingVertical: 8,
     color: TEXT,
-    fontSize: 14,
+    fontFamily: HEADLINE_SERIF, fontSize: 14,
     marginBottom: 8,
   },
   notesInput: {
     height: 70,
-    textAlignVertical: 'top',
+    textAlignVertical: 'top',fontFamily: HEADLINE_SERIF, 
   },
   divider: {
     marginTop: 12,
@@ -909,7 +918,7 @@ const styles = StyleSheet.create({
   },
   saveHint: {
     color: MUTED,
-    fontSize: 12,
+   fontFamily: HEADLINE_SERIF,  fontSize: 12,
     marginBottom: 6,
   },
   saveBtn: {
@@ -921,7 +930,7 @@ const styles = StyleSheet.create({
   },
   saveBtnText: {
     color: DEEP,
-    fontSize: 14,
+    fontFamily: HEADLINE_SERIF, fontSize: 14,
     fontWeight: '600',
   },
 });

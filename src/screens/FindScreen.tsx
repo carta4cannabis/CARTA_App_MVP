@@ -2,6 +2,17 @@ import React, { useState, useEffect, useMemo, useCallback, useRef, useLayoutEffe
 import { View, Text, StyleSheet, Pressable, Platform, Linking, ImageBackground} from 'react-native';
 
 const BG = require('../../assets/bg/carta_pattern.png');
+const GOLD = '#C9A86A';
+const DEEP = '#0E1A16';
+const CARD = '#121F1A';
+const INK = '#E9EFEA';
+const MUTED = '#9FB0A5';
+const BORDER = '#233229';
+// Brand-friendly serif without extra deps
+const HEADLINE_SERIF =
+  Platform.select({ ios: 'Palatino', android: 'serif' }) || 'serif';
+
+type AnyNav = any;
 
 export default function FindScreen() {
   const openMaps = () => {
@@ -27,8 +38,27 @@ export default function FindScreen() {
 
 const s = StyleSheet.create({
   wrap: { flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: '#0E1411', padding: 20 },
-  title: { color: '#E9EFEA', fontSize: 18, fontWeight: '800', marginBottom: 8 },
-  note: { color: '#BFD4CB', marginBottom: 16, textAlign: 'center' },
+  backTxt: {
+    color: GOLD,
+    fontWeight: '800',
+    fontFamily: HEADLINE_SERIF, fontSize: 16,
+    marginRight: 4,
+    marginBottom: 6,
+  },
+  backLabel: {
+    color: GOLD,
+    fontFamily: HEADLINE_SERIF, fontSize: 15,
+    fontWeight: '500',
+    marginBottom: 0,
+  },
+
+  title: {
+    color: GOLD,
+    fontFamily: HEADLINE_SERIF, fontSize: 32,
+    fontWeight: '800',
+    textAlign: 'center'
+  },
+  note: { color: '#BFD4CB', fontFamily: HEADLINE_SERIF, marginBottom: 16, textAlign: 'center' },
   btn: { backgroundColor: '#C9A86A', paddingHorizontal: 16, paddingVertical: 10, borderRadius: 10 },
-  btnTxt: { color: '#111', fontWeight: '700' },
+  btnTxt: { color: '#111', fontFamily: HEADLINE_SERIF, fontWeight: '700' },
 });

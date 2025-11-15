@@ -28,7 +28,11 @@ const CARD = '#121F1A';
 const INK = '#E9EFEA';
 const MUTED = '#9FB0A5';
 const BORDER = '#233229';
+// Brand-friendly serif without extra deps
+const HEADLINE_SERIF =
+  Platform.select({ ios: 'Palatino', android: 'serif' }) || 'serif';
 
+type AnyNav = any;
 if (
   Platform.OS === 'android' &&
   (require('react-native').UIManager
@@ -165,29 +169,32 @@ const s = StyleSheet.create({
     alignSelf: 'flex-start',
     marginBottom: 6,
   },
-  backTxt: {
+  backTxt: { color: GOLD, fontWeight: '800', fontFamily: HEADLINE_SERIF, fontSize: 14, marginRight: 4 },
+ backIcon: {
     color: GOLD,
-    fontWeight: '800',
-    fontSize: 16,
-    marginRight: 4,
-    marginBottom: 6,
-  },
-  backLabel: {
-    color: GOLD,
+    fontFamily: HEADLINE_SERIF, 
     fontSize: 14,
-    fontWeight: '500',
-    marginBottom: 6,
+    marginRight: 4,
+    marginBottom: 8,
   },
+   backLabel: {
+    color: GOLD,
+    fontFamily: HEADLINE_SERIF, fontSize: 15,
+    fontWeight: '500',
+    marginBottom: -4,
+  },
+
   title: {
     color: GOLD,
-    fontSize: 26,
+    fontFamily: HEADLINE_SERIF, fontSize: 32,
     fontWeight: '800',
-    marginBottom: 4,
+    textAlign: 'center'
   },
   subTitle: {
     color: INK,
-    fontSize: 14,
-    marginTop: 4,
+    fontFamily: HEADLINE_SERIF, fontSize: 15,
+    marginTop: 12,
+    textAlign: 'center'
   },
 
   headerRow: {
@@ -201,8 +208,8 @@ const s = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
   },
-  headerText: { color: INK, fontSize: 16, fontWeight: '700', flex: 1 },
-  chev: { color: GOLD, fontSize: 24, marginLeft: 8 },
+  headerText: { color: INK, fontFamily: HEADLINE_SERIF, fontSize: 16, fontWeight: '700', flex: 1 },
+  chev: { color: GOLD, fontFamily: HEADLINE_SERIF, fontSize: 24, marginLeft: 8 },
 
   itemRow: {
     backgroundColor: CARD,
@@ -213,6 +220,6 @@ const s = StyleSheet.create({
     paddingHorizontal: 16,
     borderRadius: 10,
   },
-  itemText: { color: INK, fontSize: 15 },
+  itemText: { color: INK, fontFamily: HEADLINE_SERIF, fontSize: 15 },
   pressed: { opacity: 0.6 },
 });

@@ -31,6 +31,11 @@ const CARD = '#121F1A';
 const INK = '#E9EFEA';
 const MUTED = '#9FB0A5';
 const BORDER = '#1E2B26';
+// Brand-friendly serif without extra deps
+const HEADLINE_SERIF =
+  Platform.select({ ios: 'Palatino', android: 'serif' }) || 'serif';
+
+type AnyNav = any;
 
 function parseCoaFromScan(raw: string | undefined | null) {
   if (!raw) return null;
@@ -132,8 +137,8 @@ export default function ScannerScreen() {
             onPress={() => nav.goBack()}
             style={s.backBtn}
           >
-            <Text style={s.backText}>{'\u25C0'}</Text>
-            <Text style={s.backLabel}>Back</Text>
+            <Text style={s.backIcon}>{'\u25C0'}</Text>
+                    <Text style={s.backLabel}>Back</Text>
           </Pressable>
           <Text style={s.title}>Scan a Code</Text>
           <Text style={s.subTitle}>
@@ -224,30 +229,35 @@ const s = StyleSheet.create({
   backBtn: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 6,
     alignSelf: 'flex-start',
+    marginBottom: 6,
   },
-  backText: {
+ backIcon: {
     color: GOLD,
+    fontFamily: HEADLINE_SERIF, 
     fontSize: 14,
     marginRight: 4,
-    marginBottom: 8,
+    marginBottom: 0,
   },
-  backLabel: {
+   backLabel: {
     color: GOLD,
-    fontSize: 14,
+    fontFamily: HEADLINE_SERIF, fontSize: 15,
     fontWeight: '500',
-    marginBottom: 8,
+    marginBottom: -4,
   },
+
   title: {
     color: GOLD,
-    fontSize: 26,
+    fontFamily: HEADLINE_SERIF, fontSize: 32,
     fontWeight: '800',
+    textAlign: 'center'
   },
   subTitle: {
     color: INK,
-    marginTop: 8,
+   fontFamily: HEADLINE_SERIF,  marginTop: 8,
     marginBottom: 12,
+    textAlign: 'center',
+    fontSize: 15,
   },
 
   card: {
@@ -282,7 +292,7 @@ const s = StyleSheet.create({
     paddingHorizontal: 12,
     paddingVertical: 8,
   },
-  bannerText: { color: INK, fontWeight: '700' },
+  bannerText: { color: INK, fontFamily: HEADLINE_SERIF,  fontWeight: '700' },
 
   btn: {
     borderColor: GOLD,
@@ -291,7 +301,7 @@ const s = StyleSheet.create({
     paddingVertical: 10,
     alignItems: 'center',
   },
-  btnText: { color: GOLD, fontWeight: '700' },
+  btnText: { color: GOLD, fontFamily: HEADLINE_SERIF, fontWeight: '700' },
   btnGhost: {
     borderColor: GOLD,
     borderWidth: 1,
@@ -300,13 +310,13 @@ const s = StyleSheet.create({
     padding: 10,
     alignItems: 'center',
   },
-  btnGhostText: { color: INK, fontWeight: '700' },
+  btnGhostText: { color: INK, fontFamily: HEADLINE_SERIF, fontSize: 15, fontWeight: '700' },
 
   pressed: { opacity: 0.7 },
-  cardTitle: { color: INK, fontSize: 18, fontWeight: '800' },
+  cardTitle: { color: INK, fontFamily: HEADLINE_SERIF, fontSize: 18, fontWeight: '800' },
   body: {
     color: INK,
-    fontSize: 14,
+   fontFamily: HEADLINE_SERIF,  fontSize: 14,
     lineHeight: 20,
     ...(Platform.select({
       ios: { fontFamily: 'System' },

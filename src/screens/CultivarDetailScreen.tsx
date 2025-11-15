@@ -36,6 +36,11 @@ const CARD = '#121F1A';
 const BORDER = '#233229';
 const TEXT = '#F5F5F5';
 const MUTED = '#9BA6A0';
+// Brand-friendly serif without extra deps
+const HEADLINE_SERIF =
+  Platform.select({ ios: 'Palatino', android: 'serif' }) || 'serif';
+
+type AnyNav = any;
 const BG: ImageSourcePropType = require('../assets/bg/carta_pattern.png');
 
 type Nav = NavigationProp<any>;
@@ -379,29 +384,33 @@ const styles = StyleSheet.create({
   },
    backText: {
     color: GOLD,
+    fontFamily: HEADLINE_SERIF, 
     fontSize: 14,
     marginRight: 4,
     marginBottom: 8
   },
   backLabel: {
     color: GOLD,
-    fontSize: 14,
+    fontFamily: HEADLINE_SERIF, fontSize: 15,
     fontWeight: '500',
-    marginBottom: 8
+    marginBottom: 0,
   },
+
   title: {
     color: GOLD,
-    fontSize: 26,
-    fontWeight: '700',
+    fontFamily: HEADLINE_SERIF, fontSize: 32,
+    fontWeight: '800',
+    textAlign: 'center'
   },
-  subTitle: { color: TEXT, fontSize: 16, marginTop: 14, marginBottom: 2 },
+  subTitle: { color: TEXT, fontFamily: HEADLINE_SERIF, fontSize: 16, marginTop: 14, marginBottom: 2, textAlign: 'center' },
   body: {
     flex: 1,
+   fontFamily: HEADLINE_SERIF, 
     paddingHorizontal: 16,
     paddingTop: 8,
   },
-  placeholder: { color: MUTED, marginTop: 16 },
-  placeholderSmall: { color: MUTED, fontSize: 14, marginTop: 4 },
+  placeholder: { color: MUTED, fontFamily: HEADLINE_SERIF, marginTop: 16 },
+  placeholderSmall: { color: MUTED, fontFamily: HEADLINE_SERIF, fontSize: 14, marginTop: 4 },
   imageSection: {
     backgroundColor: CARD,
     borderRadius: 12,
@@ -432,12 +441,14 @@ const styles = StyleSheet.create({
   },
   infoLabel: {
     color: TEXT,
+    fontFamily: HEADLINE_SERIF, 
     fontSize: 18,
     marginTop: 4,
     marginBottom: 6
   },
   infoValue: {
     color: MUTED,
+    fontFamily: HEADLINE_SERIF, 
     fontSize: 13,
     fontWeight: '500',
     marginBottom: 12
@@ -454,7 +465,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 8,
     paddingVertical: 4,
   },
-  chipText: { color: GOLD, fontSize: 13, fontWeight: '500' },
+  chipText: { color: GOLD, fontFamily: HEADLINE_SERIF, fontSize: 13, fontWeight: '500' },
 
   secondaryBtn: {
     borderRadius: 8,
@@ -465,7 +476,7 @@ const styles = StyleSheet.create({
     borderColor: BORDER,
     marginRight: 8,
   },
-  secondaryBtnText: { color: TEXT, fontSize: 14, fontWeight: '500' },
+  secondaryBtnText: { color: TEXT, fontFamily: HEADLINE_SERIF, fontSize: 14, fontWeight: '500' },
   section: {
     backgroundColor: CARD,
     borderRadius: 12,
@@ -474,11 +485,11 @@ const styles = StyleSheet.create({
     borderColor: GOLD,
     marginBottom: 12,
   },
-  sectionTitle: { color: TEXT, fontSize: 18, fontWeight: '600', marginBottom: 12 },
+  sectionTitle: { color: TEXT, fontFamily: HEADLINE_SERIF, fontSize: 18, fontWeight: '600', marginBottom: 12 },
   ratingRow: {
     marginBottom: 20,
   },
-  ratingLabel: { color: TEXT, fontSize: 14, marginBottom: 4 },
+  ratingLabel: { color: TEXT, fontFamily: HEADLINE_SERIF, fontSize: 14, marginBottom: 4 },
   ratingDots: {
     flexDirection: 'row',
     gap: 4,
@@ -497,10 +508,12 @@ const styles = StyleSheet.create({
   },
   dotText: {
     color: MUTED,
+    fontFamily: HEADLINE_SERIF, 
     fontSize: 13,
   },
   dotTextActive: {
     color: DEEP,
+    fontFamily: HEADLINE_SERIF, 
     fontWeight: '600',
   },
   notesInput: {
@@ -511,12 +524,14 @@ const styles = StyleSheet.create({
     color: TEXT,
     paddingHorizontal: 10,
     paddingVertical: 8,
+   fontFamily: HEADLINE_SERIF, 
     fontSize: 14,
     height: 100,
     textAlignVertical: 'top',
   },
   notesHint: {
     color: MUTED,
+    fontFamily: HEADLINE_SERIF, 
     fontSize: 12,
     marginTop: 4,
   },

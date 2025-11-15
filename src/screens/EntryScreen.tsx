@@ -22,6 +22,11 @@ const CARD = '#121F1A';
 const BORDER = '#233229';
 const TEXT = '#F5F5F5';
 const MUTED = '#9BA6A0';
+// Brand-friendly serif without extra deps
+const HEADLINE_SERIF =
+  Platform.select({ ios: 'Palatino', android: 'serif' }) || 'serif';
+
+type AnyNav = any;
 const BG: ImageSourcePropType = require('../assets/bg/carta_pattern.png');
 
 type Nav = NavigationProp<any>;
@@ -70,7 +75,7 @@ const EntryScreen: React.FC = () => {
         <View style={styles.container}>
           {/* Centered header */}
           <View style={styles.headerBlock}>
-            <Text style={styles.logo}>Welcome to</Text>
+            <Text style={styles.logo}>Welcome to your</Text>
             <Text style={styles.title}>CARTA Stack</Text>
             <Text style={styles.subtitle}>
               Choose who’s using the app today so we can keep your sessions, favorites,
@@ -185,14 +190,14 @@ const styles = StyleSheet.create({
   },
   logo: {
     color: TEXT,
-    fontSize: 26,
+    fontFamily: HEADLINE_SERIF, fontSize: 28,
     fontWeight: '700',
-    marginBottom: 4,
+    marginBottom: 8,
     textAlign: 'center',
   },
   title: {
     color: GOLD,
-    fontSize: 42,
+   fontFamily: HEADLINE_SERIF,  fontSize: 46,
     fontWeight: '700',
     marginTop: 4,
     marginBottom: 14,
@@ -200,7 +205,7 @@ const styles = StyleSheet.create({
   },
   subtitle: {
     color: TEXT,
-    fontSize: 14,
+    fontFamily: HEADLINE_SERIF, fontSize: 15,
     lineHeight: 20,
     marginBottom: 4,
     textAlign: 'center',
@@ -221,13 +226,13 @@ const styles = StyleSheet.create({
   },
   cardTitle: {
     color: TEXT,
-    fontSize: 20,
+    fontFamily: HEADLINE_SERIF, fontSize: 20,
     fontWeight: '600',
     marginBottom: 12,
   },
   cardText: {
     color: TEXT,
-    fontSize: 14,
+   fontFamily: HEADLINE_SERIF,  fontSize: 14,
     marginBottom: 12,
   },
   input: {
@@ -258,7 +263,7 @@ const styles = StyleSheet.create({
   },
   primaryBtnText: {
     color: DEEP,
-    fontSize: 18,
+    fontFamily: HEADLINE_SERIF, fontSize: 18,
     fontWeight: '600',
   },
   secondaryBtn: {
@@ -271,7 +276,7 @@ const styles = StyleSheet.create({
   },
   secondaryBtnText: {
     color: TEXT,
-    fontSize: 16,
+    fontFamily: HEADLINE_SERIF, fontSize: 16,
     fontWeight: '500',
   },
   ghostBtn: {
@@ -281,7 +286,7 @@ const styles = StyleSheet.create({
   },
   ghostBtnText: {
     color: MUTED,
-    fontSize: 14,
+    fontFamily: HEADLINE_SERIF, fontSize: 15,
   },
   profileRow: {
     flexDirection: 'row',
@@ -302,16 +307,16 @@ const styles = StyleSheet.create({
   },
   profileInitial: {
     color: GOLD,
-    fontWeight: '700',
+    fontFamily: HEADLINE_SERIF, fontWeight: '700',
   },
   profileName: {
     color: TEXT,
-    fontSize: 18,
+    fontFamily: HEADLINE_SERIF, fontSize: 18,
     fontWeight: '500',
   },
   profileMeta: {
     color: MUTED,
-    fontSize: 12,
+    fontFamily: HEADLINE_SERIF, fontSize: 12,
   },
   createRow: {
     flexDirection: 'row',

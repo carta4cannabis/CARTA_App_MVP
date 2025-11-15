@@ -16,6 +16,10 @@ const DEEP = '#0E1A16';
 const CARD = '#121F1A';
 const INK  = '#E9EFEA';
 
+// Brand-friendly serif without extra deps
+const HEADLINE_SERIF =
+  Platform.select({ ios: 'Palatino', android: 'serif' }) || 'serif';
+
 type AnyNav = any;
 
 export default memo(function HomeScreen() {
@@ -54,12 +58,12 @@ export default memo(function HomeScreen() {
           <View style={s.row}>
             <Block
               title="REGIMEN      BUILDER"
-              blurb="Build a clinically sound, personalized regimen               in just a few clicks."
+              blurb="Build a clinically sound, personalized regimen in just a few clicks."
               onPress={goDosing}
             />
             <Block
               title="OUTCOME  TRACKING"
-              blurb="Track sessions to see what works for you -                       optimize with AI Coach."
+              blurb="Track sessions to see what works for you — optimize with AI Coach."
               onPress={goOutcomes}
             />
           </View>
@@ -67,12 +71,12 @@ export default memo(function HomeScreen() {
           <View style={s.row}>
             <Block
               title="PRODUCTS  & EDUCATION"
-              blurb="Explore CARTA products,           learn the science, and              conquer Quests."
+              blurb="Explore CARTA products, learn the science, and conquer Quests."
               onPress={goProducts}
             />
             <Block
               title="PRO TOOLS  &           EXTRAS"
-              blurb="COA scanning, chemotype matching, and cultivar                 library - all in one place"
+              blurb="COA scanning, chemotype matching, and cultivar library — all in one place."
               onPress={goTools}
             />
           </View>
@@ -110,7 +114,14 @@ function Block({
 const s = StyleSheet.create({
   safe: { flex: 1, backgroundColor: DEEP },
   // Full-height background with your poster; border gives the framed look you had
-  bg: { flex: 1, justifyContent: 'flex-end', borderRadius: 1, borderColor: GOLD, borderWidth: 5, padding: 8 },
+  bg: {
+    flex: 1,
+    justifyContent: 'flex-end',
+    borderRadius: 1,
+    borderColor: GOLD,
+    borderWidth: 3,
+    padding: 8,
+  },
 
   card: {
     backgroundColor: CARD,
@@ -126,29 +137,54 @@ const s = StyleSheet.create({
   block: { flex: 1, alignItems: 'center' },
 
   btn: {
-    width: '90%',
+    width: '95%',
     paddingVertical: 14,
     borderRadius: 12,
     backgroundColor: '#1C2B24',
     borderWidth: 1,
     borderColor: GOLD,
     alignItems: 'center',
-    paddingHorizontal: 10,
+    paddingHorizontal: 6,
+    // subtle elevation to make the serif pop
+    shadowColor: '#000',
+    shadowOpacity: 0.5,
+    shadowRadius: 10,
+    shadowOffset: { width: 0, height: 5 },
+    elevation: 8,
   },
   pressed: { opacity: 0.75 },
-  btnText: { color: INK, fontWeight: '500', fontSize: 18, textAlign: 'center' },
 
-  blurb: { color: '#B7C5BE', fontSize: 12, textAlign: 'center', marginTop: 10, marginBottom: 12 },
+  // UPDATED FONT
+  btnText: {
+    color: INK,
+    fontFamily: HEADLINE_SERIF,
+    fontSize: 20,
+    lineHeight: 24,
+    letterSpacing: 0.5,
+    fontWeight: '500',
+    textAlign: 'center',
+  },
+
+  blurb: {
+    color: '#B7C5BE',
+    fontFamily: HEADLINE_SERIF,
+    fontSize: 14,
+    textAlign: 'center',
+    fontWeight: '500',
+    marginTop: 10,
+    marginBottom: 12,
+  },
 
   brandWrap: { alignItems: 'center', paddingTop: 2 },
   brandSub: {
     color: GOLD,
+    fontFamily: HEADLINE_SERIF,
     fontWeight: '900',
-    fontSize: 12,
+    fontSize: 13,
     lineHeight: 20,
     textAlign: 'center',
     letterSpacing: 0.2,
     marginTop: 0,
-    marginBottom: 10,
+    marginBottom: 6,
   },
 });
