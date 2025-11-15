@@ -1,15 +1,26 @@
 {
   "cli": {
-    "version": ">= 5.0.0",
-    "appVersionSource": "remote"
+    "version": ">= 13.0.0"
   },
   "build": {
+    "development": {
+      "developmentClient": true,
+      "distribution": "internal",
+      "android": {
+        "buildType": "apk"
+      },
+      "env": {
+        "EAS_NO_FROZEN_LOCKFILE": "1"
+      }
+    },
     "production": {
-      "channel": "production",
-      "node": "20.11.1"
+      "distribution": "store",
+      "android": {
+        "buildType": "app-bundle"
+      },
+      "env": {
+        "EAS_NO_FROZEN_LOCKFILE": "1"
+      }
     }
-  },
-  "submit": {
-    "production": {}
   }
 }
