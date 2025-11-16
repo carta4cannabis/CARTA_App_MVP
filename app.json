@@ -43,18 +43,23 @@
       "bundler": "metro"
     },
     "plugins": [
-    
       "expo-sqlite",
       "expo-font",
       "expo-asset",
-      "expo-camera"
+      "expo-camera",
+      [ "expo-build-properties",
+        {
+          "ios": {
+            "newArchEnabled": false
+          }
+        }
+      ]
     ],
     "extra": {
       "eas": {
         "projectId": "cde47772-74a1-4c9f-9c4d-67fd0d65461f"
       }
     },
-    
     "runtimeVersion": {
       "policy": "appVersion"
     }
