@@ -6,6 +6,7 @@ module.exports = {
       platforms: {
         android: null,
         ios: null,
+        podspecPath: './node_modules/react-native-worklets/RNWorklets.podspec',
       },
     },
   },
