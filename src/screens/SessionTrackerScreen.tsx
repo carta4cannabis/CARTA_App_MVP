@@ -23,6 +23,7 @@ import {
   saveSessionEntry,
   refreshAtiAndCoach,
 } from '../addons/CARTA_CoachExtras';
+import { KeyboardSafeScreen } from '../components/KeyboardSafeScreen';
 
 const BG = require('../../assets/bg/carta_pattern.png');
 
@@ -439,12 +440,10 @@ export default function SessionTrackerScreen() {
               Log what you used and how it worked.
             </Text>
           </View>
-
+<KeyboardSafeScreen>
         <ScrollView
           contentContainerStyle={s.container}
-          keyboardShouldPersistTaps="handled"
-        >
-
+          keyboardShouldPersistTaps="handled">
           {/* Date & Time */}
           <View style={s.card}>
             <Text style={s.cardTitle}>
@@ -746,6 +745,7 @@ export default function SessionTrackerScreen() {
 
           <View style={{ height: 24 }} />
         </ScrollView>
+        </KeyboardSafeScreen>
       </KeyboardAvoidingView>
     </SafeAreaView>
   );

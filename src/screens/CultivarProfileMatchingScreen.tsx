@@ -27,6 +27,7 @@ import {
   createCultivarId,
   CultivarRecord,
 } from '../utils/CultivarStorage';
+import { KeyboardSafeScreen } from '../components/KeyboardSafeScreen';
 
 const GOLD = '#C9A86A';
 const DEEP = '#0E1A16';
@@ -480,10 +481,11 @@ const CultivarProfileMatchingScreen: React.FC = () => {
           </Pressable>
           <Text style={styles.title}>Cultivar Profile Matching</Text>
         </View>
-
+<KeyboardSafeScreen>
         <ScrollView
           style={styles.scroll}
           contentContainerStyle={styles.scrollContent}
+          keyboardShouldPersistTaps="handled"
         >
           <View style={styles.introCard}>
             <Text style={styles.introTitle}>Turn COAs into therapeutic insight</Text>
@@ -697,6 +699,7 @@ const CultivarProfileMatchingScreen: React.FC = () => {
             </View>
           )}
         </ScrollView>
+        </KeyboardSafeScreen>
       </SafeAreaView>
     </ImageBackground>
   );
@@ -805,7 +808,7 @@ const styles = StyleSheet.create({
   },
   scanBtnText: {
     color: GOLD,
-   fontFamily: HEADLINE_SERIF,  fontSize: 13,
+   fontFamily: HEADLINE_SERIF,  fontSize: 15,
     fontWeight: '600',
   },
   section: {

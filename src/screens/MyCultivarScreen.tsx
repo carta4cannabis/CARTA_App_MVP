@@ -31,7 +31,7 @@ const DEEP = '#0E1A16';
 const CARD = '#121F1A';
 const BORDER = '#233229';
 const TEXT = '#F5F5F5';
-const MUTED = '#9BA6A0';
+const MUTED = '#b3bab6ff';
 // Brand-friendly serif without extra deps
 const HEADLINE_SERIF =
   Platform.select({ ios: 'Palatino', android: 'serif' }) || 'serif';
@@ -261,7 +261,7 @@ const styles = StyleSheet.create({
     marginTop: 12, 
     marginBottom: 12
   },
-  primaryBtnText: { color: DEEP, fontFamily: HEADLINE_SERIF, fontSize: 13, fontWeight: '600' },
+  primaryBtnText: { color: DEEP, fontFamily: HEADLINE_SERIF, fontSize: 15, fontWeight: '600' },
   addCard: {
     marginTop: 8,
     marginHorizontal: 16,
@@ -271,7 +271,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: GOLD,
   },
-  sectionTitle: { color: TEXT, fontFamily: HEADLINE_SERIF, fontSize: 14, fontWeight: '600', marginBottom: 8 },
+  sectionTitle: { color: TEXT, fontFamily: HEADLINE_SERIF, fontSize: 15, fontWeight: '600', marginBottom: 8 },
   input: {
     backgroundColor: '#1B2922',
     borderRadius: 8,
@@ -280,7 +280,7 @@ const styles = StyleSheet.create({
     color: TEXT,
     paddingHorizontal: 10,
     paddingVertical: 8,
-    fontFamily: HEADLINE_SERIF, fontSize: 14,
+    fontFamily: HEADLINE_SERIF, fontSize: 15,
     marginBottom: 8,
   },
   notesInput: {
@@ -294,7 +294,7 @@ const styles = StyleSheet.create({
   },
   placeholder: {
     color: MUTED,
-    fontFamily: HEADLINE_SERIF, fontSize: 13,
+    fontFamily: HEADLINE_SERIF, fontSize: 15,
     marginTop: 12,
   },
   card: {
@@ -311,16 +311,16 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   cardTitle: { color: TEXT, fontFamily: HEADLINE_SERIF, fontSize: 15, fontWeight: '600' },
-  cardBrand: { color: MUTED, fontFamily: HEADLINE_SERIF, fontSize: 12, marginTop: 2 },
-  cardMeta: { color: MUTED, fontFamily: HEADLINE_SERIF, fontSize: 11, marginTop: 4 },
-  cardNotes: { color: TEXT, fontFamily: HEADLINE_SERIF, fontSize: 12, marginTop: 6 },
+  cardBrand: { color: MUTED, fontFamily: HEADLINE_SERIF, fontSize: 13, marginTop: 2 },
+  cardMeta: { color: MUTED, fontFamily: HEADLINE_SERIF, fontSize: 13, marginTop: 4 },
+  cardNotes: { color: TEXT, fontFamily: HEADLINE_SERIF, fontSize: 13, marginTop: 6 },
   chip: {
     backgroundColor: '#1F2B24',
     borderRadius: 12,
     paddingHorizontal: 8,
     paddingVertical: 4,
   },
-  chipText: { color: GOLD, fontFamily: HEADLINE_SERIF, fontSize: 11, fontWeight: '500' },
+  chipText: { color: GOLD, fontFamily: HEADLINE_SERIF, fontSize: 13, fontWeight: '500' },
 });
 
 export default MyCultivarsScreen;

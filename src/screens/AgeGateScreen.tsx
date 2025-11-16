@@ -177,7 +177,7 @@ const styles = StyleSheet.create({
   primaryBtnText: {
     color: DEEP,
     fontFamily: HEADLINE_SERIF, 
-    fontSize: 14,
+    fontSize: 15,
     fontWeight: '600',
   },
   secondaryBtn: {
@@ -191,7 +191,7 @@ const styles = StyleSheet.create({
   secondaryBtnText: {
     color: TEXT,
    fontFamily: HEADLINE_SERIF, 
-    fontSize: 14,
+    fontSize: 15,
     fontWeight: '500',
     textAlign: 'center',
   },
@@ -203,7 +203,7 @@ const styles = StyleSheet.create({
   ghostBtnText: {
     color: MUTED,
    fontFamily: HEADLINE_SERIF, 
-    fontSize: 14,
+    fontSize: 15,
   },
 });
 

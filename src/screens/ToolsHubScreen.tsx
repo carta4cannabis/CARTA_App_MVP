@@ -205,7 +205,7 @@ export default function ToolsHubScreen() {
               onPress={() => goTab('Scanner')}
             />
             <Text style={s.blurb}>
-              Scan product labels and COA-enabled QR codes for instant details.
+              Scan product COA-enabled QR codes for instant details.
             </Text>
 
             <HubButton

@@ -232,7 +232,7 @@ const styles = StyleSheet.create({
   },
   cardText: {
     color: TEXT,
-   fontFamily: HEADLINE_SERIF,  fontSize: 14,
+   fontFamily: HEADLINE_SERIF,  fontSize: 15,
     marginBottom: 12,
   },
   input: {
@@ -244,6 +244,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     paddingVertical: 8,
     fontSize: 16,
+    marginBottom: 14
     
   },
   primaryBtn: {
@@ -251,7 +252,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     paddingVertical: 10,
     alignItems: 'center',
-    marginBottom: 10,
+    marginBottom: 14,
   },
   primaryBtnSmall: {
     backgroundColor: GOLD,
