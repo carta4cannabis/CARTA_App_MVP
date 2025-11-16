@@ -43,7 +43,7 @@
       "bundler": "metro"
     },
     "plugins": [
-      "./plugins/with-react-native-worklets",
+    
       "expo-sqlite",
       "expo-font",
       "expo-asset",
