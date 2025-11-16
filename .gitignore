@@ -14,3 +14,4 @@ Thumbs.db
 
 # TypeScript build output (if any)
 *.tsbuildinfo
+package-lock.json 
