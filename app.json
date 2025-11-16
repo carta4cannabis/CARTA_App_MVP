@@ -46,14 +46,7 @@
       "expo-sqlite",
       "expo-font",
       "expo-asset",
-      "expo-camera",
-      [ "expo-build-properties",
-        {
-          "ios": {
-            "newArchEnabled": false
-          }
-        }
-      ]
+      "expo-camera"
     ],
     "extra": {
       "eas": {
