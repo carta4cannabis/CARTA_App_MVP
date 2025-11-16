@@ -58,7 +58,6 @@
     "text-encoding": "^0.7.0"
   },
   "devDependencies": {
-    "@expo/config": "^12.0.10",
     "@types/react": "~19.1.10",
     "babel-preset-expo": "^54.0.3",
     "expo": "^54.0.23",
