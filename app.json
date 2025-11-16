@@ -54,6 +54,9 @@
         "projectId": "cde47772-74a1-4c9f-9c4d-67fd0d65461f"
       }
     },
+    "experiments": {
+      "reactNativeNewArchitecture": false
+    },
     "runtimeVersion": {
       "policy": "appVersion"
     }
