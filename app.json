@@ -1,9 +1,9 @@
 {
   "expo": {
-    "name": "CARTA",
+    "name": "CARTA Stack",
     "slug": "carta",
     "jsEngine": "hermes",
-    "version": "1.0.9",
+    "version": "1.1.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "splash": {
@@ -20,15 +20,15 @@
     ],
     "ios": {
       "supportsTablet": true,
-      "buildNumber": "8",
+      "buildNumber": "9",
       "infoPlist": {
         "NSCameraUsageDescription": "CARTA needs camera access to scan product QR codes.",
         "ITSAppUsesNonExemptEncryption": false
       },
-      "bundleIdentifier": "com.carta4cannabis.carta"
+      "bundleIdentifier": "carta4cannabis"
     },
     "android": {
-      "versionCode": 89,
+      "versionCode": 101,
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#061A18"
