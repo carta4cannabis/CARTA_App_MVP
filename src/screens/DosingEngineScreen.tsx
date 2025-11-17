@@ -45,7 +45,7 @@ const IMAGES = {
   booster_spray: require('../../assets/products/booster_spray.png'),
   flower: require('../../assets/products/flower.jpg'),
   vape_cart: require('../../assets/products/vape_cart.png'),
-  rosin_jar: require('../../assets/products/rosin_jar.jpg'),
+  rosin_jar: require('../../assets/products/rosin_jar.png'),
 } as const;
 
 /* Types */
