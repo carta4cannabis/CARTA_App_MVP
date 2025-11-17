@@ -4,6 +4,24 @@ import { ActivityIndicator, Platform, View } from 'react-native';
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import { WebView } from 'react-native-webview';
 import { Asset } from 'expo-asset';
+import {
+  getReliefMetricsForPdf,
+  RELIEF_METRICS,
+  RELIEF_METRIC_LABELS,
+} from '../utils/reliefMetrics';
+
+async function buildClinicianPdf() {
+  const { series, summary } = await getReliefMetricsForPdf({
+    maxDays: 30,
+    maxEntries: 60,
+  });
+
+  // 1) Use `summary` at the top of the PDF:
+  //    e.g. “Pain relief: 3.8 (n=14)”, etc.
+
+  // 2) Feed `series` into your chart generator:
+  //    each `series[key]` is an array of { x: Date, y: number } for one colored line.
+}
 
 type HandoutParams = {
   HandoutViewer: {

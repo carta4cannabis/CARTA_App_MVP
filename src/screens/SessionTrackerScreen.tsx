@@ -409,18 +409,7 @@ export default function SessionTrackerScreen() {
             ]}
           >
             <Pressable
-              onPress={() => {
-                if (
-                  (nav as any).canGoBack?.()
-                ) {
-                  (nav as any).goBack();
-                } else {
-                  (nav as any).navigate?.(
-                    'Tabs',
-                    { screen: 'Tracker' },
-                  );
-                }
-              }}
+              onPress={() => nav.goBack()}
               style={({ pressed }) => [
                 s.backBtn,
                 pressed && { opacity: 0.85 },
@@ -753,7 +742,7 @@ export default function SessionTrackerScreen() {
 
 const s = StyleSheet.create({
   safe: { flex: 1, backgroundColor: DEEP },
-  container: { padding: 16, paddingBottom: 32 },
+  container: { padding: 16, paddingTop: 0 },
 
   headerWrap: {
     paddingHorizontal: 32,
@@ -762,7 +751,7 @@ const s = StyleSheet.create({
     borderBottomWidth: StyleSheet.hairlineWidth,
     backgroundColor: 'rgba(18, 31, 26, 0.9)',
     marginHorizontal: -16,
-    marginBottom: 24,
+    marginBottom: 0,
   },
   backBtn: {
     flexDirection: 'row',

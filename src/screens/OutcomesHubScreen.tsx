@@ -1,4 +1,8 @@
-import React, { useCallback, useLayoutEffect } from 'react';
+import React, {
+  useCallback,
+  useLayoutEffect,
+  useState,
+} from 'react';
 import {
   ImageBackground,
   ScrollView,
@@ -8,9 +12,35 @@ import {
   StyleSheet,
   ImageSourcePropType,
   Platform,
+  ActivityIndicator,
 } from 'react-native';
 import { useNavigation, NavigationProp } from '@react-navigation/native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
+import * as FileSystem from 'expo-file-system';
+import * as Print from 'expo-print';
+import {
+  refreshAtiAndCoach,
+  buildClinicianSummaryHTML,
+} from '../addons/CARTA_CoachExtras';
+import { useProfiles } from '../context/ProfileContext';
+import {
+  getReliefMetricsForPdf,
+  RELIEF_METRICS,
+  RELIEF_METRIC_LABELS,
+} from '../utils/reliefMetrics';
+
+async function buildClinicianPdf() {
+  const { series, summary } = await getReliefMetricsForPdf({
+    maxDays: 30,
+    maxEntries: 60,
+  });
+
+  // 1) Use `summary` at the top of the PDF:
+  //    e.g. “Pain relief: 3.8 (n=14)”, etc.
+
+  // 2) Feed `series` into your chart generator:
+  //    each `series[key]` is an array of { x: Date, y: number } for one colored line.
+}
 
 const BG: ImageSourcePropType = require('../assets/bg/carta_pattern.png');
 const GOLD = '#C9A86A';
@@ -27,29 +57,75 @@ type AnyNav = any;
 export default function OutcomesHubScreen() {
   const navigation = useNavigation<NavigationProp<any>>();
   const insets = useSafeAreaInsets();
+  const { activeProfile } = useProfiles();
+  const profileId = activeProfile?.id ?? 'guest';
+  const [busy, setBusy] = useState(false);
 
   useLayoutEffect(() => {
     navigation.setOptions?.({ headerShown: false });
   }, [navigation]);
 
- const backHome = useCallback(() => {
-     const parent: any = (navigation as any).getParent?.() ?? navigation;
-     const state = parent?.getState?.();
-     const routeNames: string[] = state?.routeNames ?? [];
-     if (routeNames.includes?.('Home')) {
-       try {
-         parent.navigate('Home');
-         return;
-       } catch {}
-     }
-     try {
-       (navigation as any).navigate('Tabs', { screen: 'Home' });
-       return;
-     } catch {}
-     try {
-       (navigation as any).navigate('Home');
-     } catch {}
-   }, [navigation]);
+  const backHome = useCallback(() => {
+    const parent: any = (navigation as any).getParent?.() ?? navigation;
+    const state = parent?.getState?.();
+    const routeNames: string[] = state?.routeNames ?? [];
+    if (routeNames.includes?.('Home')) {
+      try {
+        parent.navigate('Home');
+        return;
+      } catch {}
+    }
+    try {
+      (navigation as any).navigate('Tabs', { screen: 'Home' });
+      return;
+    } catch {}
+    try {
+      (navigation as any).navigate('Home');
+    } catch {}
+  }, [navigation]);
+
+  const openClinicianPdf = useCallback(async () => {
+    if (busy) return;
+    setBusy(true);
+    try {
+      const { last14 } = await (refreshAtiAndCoach as any)(profileId);
+      const html = (buildClinicianSummaryHTML as any)(last14, profileId);
+      const file = await Print.printToFileAsync({ html });
+
+      const cacheDir =
+        (FileSystem as any).cacheDirectory ??
+        (FileSystem as any).documentDirectory ??
+        '';
+      const suffix = profileId || 'guest';
+      const finalUri = cacheDir
+        ? `${cacheDir}CARTA_Clinician_Summary_${suffix}.pdf`
+        : file.uri;
+
+      if (cacheDir) {
+        try {
+          await FileSystem.moveAsync({ from: file.uri, to: finalUri });
+        } catch {}
+      }
+
+      (navigation as any).navigate('HandoutViewer', {
+        title: 'Clinician Summary',
+        uri: finalUri || file.uri,
+      });
+    } catch {
+      try {
+        const { last14 } = await (refreshAtiAndCoach as any)(profileId);
+        const html = (buildClinicianSummaryHTML as any)(last14, profileId);
+        (navigation as any).navigate('SummaryPreview', {
+          title: 'Clinician Summary',
+          html,
+        });
+      } finally {
+        setBusy(false);
+      }
+      return;
+    }
+    setBusy(false);
+  }, [navigation, busy, profileId]);
 
   return (
     <SafeAreaView style={s.safe} edges={['top', 'left', 'right']}>
@@ -60,29 +136,27 @@ export default function OutcomesHubScreen() {
         resizeMode={Platform.OS === 'ios' ? 'repeat' : 'cover'}
         imageStyle={s.bgImg}
       />
- <View style={s.header}>
-          <Pressable
-                      onPress={backHome}
-                      hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-                      style={s.backBtn}
-                    >
-                      <Text style={s.backText}>{'\u25C0'}</Text>
-                      <Text style={s.backLabel}>Back</Text>
-                    </Pressable>
-          <Text style={s.title}>Outcome Tracking</Text>
-          <Text style={s.subTitle}>
-            Log sessions and quick check-ins, then turn them into ATI trends and
-            clinician-grade summaries.
-          </Text>
-        </View>
+      <View style={s.header}>
+        <Pressable
+          onPress={backHome}
+          hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+          style={s.backBtn}
+        >
+          <Text style={s.backText}>{'\u25C0'}</Text>
+          <Text style={s.backLabel}>Back</Text>
+        </Pressable>
+        <Text style={s.title}>Outcome Tracking</Text>
+        <Text style={s.subTitle}>
+          Log sessions and quick check-ins, then turn them into ATI trends and
+          clinician-grade summaries.
+        </Text>
+      </View>
       <ScrollView
         contentContainerStyle={[
           s.container,
           { paddingTop: Math.max(6, insets.top - 6) },
         ]}
       >
-       
-
         <View style={s.grid}>
           <Pressable
             style={s.btn}
@@ -105,8 +179,22 @@ export default function OutcomesHubScreen() {
             <Text style={s.btnTxt}>Quick Check-in</Text>
           </Pressable>
           <Text style={s.blurb}>
-            Check in with AI Coach, see recent trends, and build a clinician
-            summary PDF.
+            Check in with AI Coach, see recent trends, and get suggestions.
+          </Text>
+
+          {/* NEW: Clinician PDF now lives here instead of Tools Hub */}
+          <Pressable
+            style={s.btn}
+            onPress={openClinicianPdf}
+            disabled={busy}
+          >
+            <Text style={s.btnTxt}>Clinician PDF</Text>
+            {busy ? (
+              <ActivityIndicator style={s.spinRight} color={GOLD} />
+            ) : null}
+          </Pressable>
+          <Text style={s.blurb}>
+            Build a clinician-ready summary for this user’s recent sessions.
           </Text>
         </View>
 
@@ -141,38 +229,40 @@ const s = StyleSheet.create({
     marginHorizontal: -2,
     marginBottom: 24,
   },
-    backBtn: {
+  backBtn: {
     flexDirection: 'row',
     alignItems: 'center',
     marginBottom: 6,
     alignSelf: 'flex-start',
   },
-backText: {
+  backText: {
     color: GOLD,
-    fontFamily: HEADLINE_SERIF, 
+    fontFamily: HEADLINE_SERIF,
     fontSize: 14,
     marginRight: 4,
-    marginBottom: 4
+    marginBottom: 4,
   },
   backLabel: {
     color: GOLD,
-    fontFamily: HEADLINE_SERIF, fontSize: 15,
+    fontFamily: HEADLINE_SERIF,
+    fontSize: 15,
     fontWeight: '500',
     marginBottom: 0,
   },
 
   title: {
     color: GOLD,
-    fontFamily: HEADLINE_SERIF, fontSize: 32,
+    fontFamily: HEADLINE_SERIF,
+    fontSize: 32,
     fontWeight: '800',
-    textAlign: 'center'
+    textAlign: 'center',
   },
   subTitle: {
     color: INK,
     fontSize: 15,
     marginTop: 10,
-    fontFamily: HEADLINE_SERIF, 
-    textAlign: 'center'
+    fontFamily: HEADLINE_SERIF,
+    textAlign: 'center',
   },
 
   grid: { gap: 20, alignItems: 'center', marginTop: 8 },
@@ -187,7 +277,13 @@ backText: {
     width: '80%',
     maxWidth: 520,
   },
-  btnTxt: { color: INK, fontFamily: HEADLINE_SERIF, fontSize: 20, fontWeight: '800', textAlign: 'center' },
+  btnTxt: {
+    color: INK,
+    fontFamily: HEADLINE_SERIF,
+    fontSize: 20,
+    fontWeight: '800',
+    textAlign: 'center',
+  },
   blurb: {
     color: INK,
     opacity: 0.85,
@@ -198,10 +294,29 @@ backText: {
     marginTop: -2,
     marginBottom: 40,
   },
+  spinRight: {
+    position: 'absolute',
+    right: 14,
+    top: '50%',
+    marginTop: -10,
+  },
   rationale: {
     marginTop: 8,
     padding: 14,
   },
-  rTitle: { color: GOLD, fontFamily: HEADLINE_SERIF, fontSize: 17, fontWeight: '800', marginBottom: 6 },
-  rBody: { color: INK, opacity: 0.9, lineHeight: 20, fontSize: 15, fontFamily: HEADLINE_SERIF, fontWeight: '600' },
+  rTitle: {
+    color: GOLD,
+    fontFamily: HEADLINE_SERIF,
+    fontSize: 17,
+    fontWeight: '800',
+    marginBottom: 6,
+  },
+  rBody: {
+    color: INK,
+    opacity: 0.9,
+    lineHeight: 20,
+    fontSize: 15,
+    fontFamily: HEADLINE_SERIF,
+    fontWeight: '600',
+  },
 });

@@ -57,12 +57,12 @@ export default memo(function HomeScreen() {
         <View style={s.card}>
           <View style={s.row}>
             <Block
-              title="REGIMEN      BUILDER"
+              title="Regimen Builder"
               blurb="Build a clinically sound, personalized regimen in just a few clicks."
               onPress={goDosing}
             />
             <Block
-              title="OUTCOME  TRACKING"
+              title="Outcome Tracker"
               blurb="Track sessions to see what works for you — optimize with AI Coach."
               onPress={goOutcomes}
             />
@@ -70,13 +70,13 @@ export default memo(function HomeScreen() {
 
           <View style={s.row}>
             <Block
-              title="PRODUCTS  & EDUCATION"
+              title="Products & Education"
               blurb="Explore CARTA products, learn the science, and conquer Quests."
               onPress={goProducts}
             />
             <Block
-              title="PRO TOOLS  &           EXTRAS"
-              blurb="COA scanning, chemotype matching, and cultivar library — all in one place."
+              title="Cultivar Tools & Extras"
+              blurb="Chemotype matching, cultivar library, and cohort view — all in one place."
               onPress={goTools}
             />
           </View>
@@ -158,7 +158,7 @@ const s = StyleSheet.create({
   btnText: {
     color: INK,
     fontFamily: HEADLINE_SERIF,
-    fontSize: 20,
+    fontSize: 22,
     lineHeight: 24,
     letterSpacing: 0.5,
     fontWeight: '500',
@@ -179,9 +179,9 @@ const s = StyleSheet.create({
   brandSub: {
     color: GOLD,
     fontFamily: HEADLINE_SERIF,
-    fontWeight: '900',
+    fontWeight: '500',
     fontSize: 13,
-    lineHeight: 20,
+    lineHeight: 18,
     textAlign: 'center',
     letterSpacing: 0.2,
     marginTop: 0,

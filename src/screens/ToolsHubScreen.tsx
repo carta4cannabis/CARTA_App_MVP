@@ -20,6 +20,25 @@ import {
   buildClinicianSummaryHTML,
 } from '../addons/CARTA_CoachExtras';
 import { useProfiles } from '../context/ProfileContext';
+import {
+  getReliefMetricsForPdf,
+  RELIEF_METRICS,
+  RELIEF_METRIC_LABELS,
+} from '../utils/reliefMetrics';
+
+async function buildClinicianPdf() {
+  const { series, summary } = await getReliefMetricsForPdf({
+    maxDays: 30,
+    maxEntries: 60,
+  });
+
+  // 1) Use `summary` at the top of the PDF:
+  //    e.g. “Pain relief: 3.8 (n=14)”, etc.
+
+  // 2) Feed `series` into your chart generator:
+  //    each `series[key]` is an array of { x: Date, y: number } for one colored line.
+}
+
 
 const BG: ImageSourcePropType = require('../assets/bg/carta_pattern.png');
 const GOLD = '#C9A86A';
@@ -147,21 +166,6 @@ export default function ToolsHubScreen() {
           contentContainerStyle={{ paddingBottom: 28, alignItems: 'center' }}
         >
           <View style={s.grid}>
-            {/* Clinician PDF */}
-            <Pressable
-              style={s.btn}
-              onPress={openClinicianPdf}
-              disabled={busy}
-            >
-              <Text style={s.btnTxt}>Clinician PDF</Text>
-              {busy ? (
-                <ActivityIndicator style={s.spinRight} color={GOLD} />
-              ) : null}
-            </Pressable>
-            <Text style={s.blurb}>
-              Build a clinician-ready summary for this user’s recent sessions.
-            </Text>
-
             {/* Cultivar Profile Matching */}
             <Pressable
               style={s.btn}
@@ -197,6 +201,19 @@ export default function ToolsHubScreen() {
             </Pressable>
             <Text style={s.blurb}>
               See how your saved cultivars perform across CARTA therapeutic profiles.
+            </Text>
+            <Pressable
+              style={s.btn}
+              onPress={openClinicianPdf}
+              disabled={busy}
+            >
+              <Text style={s.btnTxt}>Clinician PDF</Text>
+              {busy ? (
+                <ActivityIndicator style={s.spinRight} color={GOLD} />
+              ) : null}
+            </Pressable>
+            <Text style={s.blurb}>
+              Build a clinician-ready summary for this user’s recent sessions.
             </Text>
 
             {/* Existing tools */}

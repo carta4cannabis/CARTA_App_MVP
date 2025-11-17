@@ -26,7 +26,7 @@ export type EMACheckin = {
   timestamp: number;
   mood?: number;        // 0–10 (higher = better)
   pain?: number;        // 0–10 (higher = worse)
-  sleepHours?: number;  // approx hours 0–10
+  sleep?: number;  // approx hours 0–10
   note?: string;
 };
 
@@ -59,10 +59,10 @@ async function writeJson(key: string, v: any) {
 /**
  * Save a Quick Check-In AND append a lightweight "virtual session"
  * so Coach Last-14 & Clinician PDF include it immediately.
- * - Maps mood/pain/sleepHours into outcomes (Relief column), not Notes.
+ * - Maps mood/pain/sleep into outcomes (Relief column), not Notes.
  * - Leaves sprays empty to avoid "Stacker 0 • Booster 0" in Regimen.
  */
-export async function saveQuickCheckIn(args: { mood?: number; pain?: number; sleepHours?: number; note?: string }) {
+export async function saveQuickCheckIn(args: { mood?: number; pain?: number; sleep?: number; note?: string }) {
   const now = Date.now();
 
   // 1) Persist to EMA log
@@ -71,7 +71,7 @@ export async function saveQuickCheckIn(args: { mood?: number; pain?: number; sle
     timestamp: now,
     mood: args.mood,
     pain: args.pain,
-    sleepHours: args.sleepHours,
+    sleep: args.sleep,
     note: args.note,
   });
   await writeJson(KEYS.EMA, ema);
@@ -89,9 +89,9 @@ export async function saveQuickCheckIn(args: { mood?: number; pain?: number; sle
     // Pain 0–10 (higher=worse) -> Pain relief 0–5 (higher=better)
     outcomes['Pain relief'] = clamp5(5 - args.pain / 2);
   }
-  if (typeof args.sleepHours === 'number' && !Number.isNaN(args.sleepHours)) {
+  if (typeof args.sleep === 'number' && !Number.isNaN(args.sleep)) {
     // Sleep hours ~0–10 -> Sleep quality 0–5
-    outcomes['Sleep quality'] = clamp5(args.sleepHours / 2);
+    outcomes['Sleep quality'] = clamp5(args.sleep / 2);
   }
 
   const sessions = await readJson<SessionEntry[]>(KEYS.SESSIONS, []);
@@ -452,7 +452,7 @@ function CoachExtras(props: { onSaved?: () => void }) {
       await saveQuickCheckIn({
         mood: mood ? Number(mood) : undefined,
         pain: pain ? Number(pain) : undefined,
-        sleepHours: sleep ? Number(sleep) : undefined,
+        sleep: sleep ? Number(sleep) : undefined,
         note: note || undefined,
       });
       setMood(''); setPain(''); setSleep(''); setNote('');
@@ -465,7 +465,7 @@ function CoachExtras(props: { onSaved?: () => void }) {
       <Text style={{ color:'#C9A86A', fontSize:16, fontWeight:'700', marginBottom:10 }}>Quick Check-In</Text>
       <Field label="Mood (0 terrible – 10 fantastic)" value={mood} onChangeText={setMood} />
       <Field label="Pain (0 none – 10 worst ever)" value={pain} onChangeText={setPain} />
-      <Field label="Sleep (hours)" value={sleep} onChangeText={setSleep} />
+      <Field label="Sleep quality (0 terrible - 10 fantastic)" value={sleep} onChangeText={setSleep} />
       <Text style={{ color:'#C9C9C9', marginTop:4 }}>Note (optional)</Text>
       <TextInput
         value={note}

@@ -22,7 +22,6 @@ const MUTED = '#C9C9C9';
 const HEADLINE_SERIF =
   Platform.select({ ios: 'Palatino', android: 'serif' }) || 'serif';
 
-
 /** Try to navigate to any route whose name includes "quest" (case-insensitive) */
 function navigateToQuest(navigation: any): boolean {
   const tried: string[] = [];
@@ -83,6 +82,11 @@ export default function ProductsHubScreen() {
     [navigation],
   );
 
+  const goScanner = useCallback(
+    () => (navigation as any).navigate('Tabs', { screen: 'Scanner' }),
+    [navigation],
+  );
+
   const goEducation = useCallback(
     () => (navigation as any).navigate('Tabs', { screen: 'Education' }),
     [navigation],
@@ -121,37 +125,41 @@ export default function ProductsHubScreen() {
         resizeMode={Platform.OS === 'ios' ? 'repeat' : 'cover'}
         imageStyle={s.bgImg}
       />
-<View style={s.header}>
-          <Pressable
-            onPress={backHome}
-            hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-            style={({ pressed }) => [s.backBtn, pressed && { opacity: 0.85 }]}
-          >
-            <Text style={s.backText}>{'\u25C0'}</Text>
-            <Text style={s.backLabel}>Back</Text>
-          </Pressable>
-          <Text style={s.title}>Products &amp; Education</Text>
-          <Text style={s.subTitle}>
-            Move between products, CARTA-U, and Quests with one hub.
-          </Text>
-        </View>
+      <View style={s.header}>
+        <Pressable
+          onPress={backHome}
+          hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+          style={({ pressed }) => [s.backBtn, pressed && { opacity: 0.85 }]}
+        >
+          <Text style={s.backText}>{'\u25C0'}</Text>
+          <Text style={s.backLabel}>Back</Text>
+        </Pressable>
+        <Text style={s.title}>Products &amp; Education</Text>
+        <Text style={s.subTitle}>
+          Move between products, CARTA-U, and Quests with one hub.
+        </Text>
+      </View>
       <ScrollView
         contentContainerStyle={[
           s.container,
           { paddingTop: Math.max(6, insets.top - 6) },
         ]}
       >
-        
-
         <View style={s.grid}>
           <HubButton title="Products" onPress={goProducts} />
           <Text style={s.blurb}>
             Browse the full lineup and deep-dive product pages.
           </Text>
 
+          {/* NEW: Scanner right after Products */}
+          <HubButton title="QR & Barcode Scanner" onPress={goScanner} />
+          <Text style={s.blurb}>
+            Scan CARTA product labels to pull COA details and product info.
+          </Text>
+
           <HubButton title="CARTA-U" onPress={goEducation} />
           <Text style={s.blurb}>
-            Fast reads to level up dosing, methods, and safety knowledge.
+            Quick reads to level up dosing, methods, and safety knowledge.
           </Text>
 
           <HubButton title="CARTA Quests" onPress={goQuest} />
@@ -205,28 +213,43 @@ const s = StyleSheet.create({
     marginHorizontal: -2,
     marginBottom: 24,
   },
-  backBtn: { paddingVertical: 8, paddingHorizontal: 2, flexDirection: 'row', alignItems: 'center', alignSelf: 'flex-start', marginBottom: 6 },
+  backBtn: {
+    paddingVertical: 8,
+    paddingHorizontal: 2,
+    flexDirection: 'row',
+    alignItems: 'center',
+    alignSelf: 'flex-start',
+    marginBottom: 6,
+  },
   backText: {
     color: GOLD,
-    fontFamily: HEADLINE_SERIF, 
+    fontFamily: HEADLINE_SERIF,
     fontSize: 14,
     marginRight: 4,
-    marginBottom: 4
+    marginBottom: 4,
   },
   backLabel: {
     color: GOLD,
-    fontFamily: HEADLINE_SERIF, fontSize: 15,
+    fontFamily: HEADLINE_SERIF,
+    fontSize: 15,
     fontWeight: '500',
     marginBottom: 0,
   },
 
   title: {
     color: GOLD,
-    fontFamily: HEADLINE_SERIF, fontSize: 32,
+    fontFamily: HEADLINE_SERIF,
+    fontSize: 32,
     fontWeight: '800',
-    textAlign: 'center'
+    textAlign: 'center',
   },
-  subTitle: { color: INK, fontFamily: HEADLINE_SERIF, fontSize: 15, marginTop: 10, textAlign: 'center' },
+  subTitle: {
+    color: INK,
+    fontFamily: HEADLINE_SERIF,
+    fontSize: 15,
+    marginTop: 10,
+    textAlign: 'center',
+  },
 
   grid: { gap: 20, alignItems: 'center', marginTop: 8 },
   btn: {
@@ -240,7 +263,13 @@ const s = StyleSheet.create({
     width: '80%',
     maxWidth: 520,
   },
-  btnTxt: { color: INK, fontFamily: HEADLINE_SERIF, fontSize: 20, fontWeight: '800', textAlign: 'center' },
+  btnTxt: {
+    color: INK,
+    fontFamily: HEADLINE_SERIF,
+    fontSize: 20,
+    fontWeight: '800',
+    textAlign: 'center',
+  },
   blurb: {
     color: INK,
     opacity: 0.85,
@@ -255,6 +284,19 @@ const s = StyleSheet.create({
     marginTop: 8,
     padding: 14,
   },
-  rTitle: { color: GOLD, fontFamily: HEADLINE_SERIF, fontSize: 17, fontWeight: '800', marginBottom: 6 },
-  rBody: { color: INK, opacity: 0.9, lineHeight: 20, fontSize: 15, fontFamily: HEADLINE_SERIF, fontWeight: '600' },
+  rTitle: {
+    color: GOLD,
+    fontFamily: HEADLINE_SERIF,
+    fontSize: 17,
+    fontWeight: '800',
+    marginBottom: 6,
+  },
+  rBody: {
+    color: INK,
+    opacity: 0.9,
+    lineHeight: 20,
+    fontSize: 15,
+    fontFamily: HEADLINE_SERIF,
+    fontWeight: '600',
+  },
 });

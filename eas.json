@@ -11,7 +11,8 @@
       },
       "env": {
         "EAS_NO_FROZEN_LOCKFILE": "1"
-      }
+      },
+      "channel": "development"
     },
     "production": {
       "distribution": "store",
@@ -20,7 +21,8 @@
       },
       "env": {
         "EAS_NO_FROZEN_LOCKFILE": "1"
-      }
+      },
+      "channel": "production"
     }
   }
 }

@@ -16,7 +16,9 @@ import {
   View,
   ImageBackground,
   Platform,
+  DeviceEventEmitter,
 } from 'react-native';
+
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -93,8 +95,17 @@ export default function CoachScreen() {
   }, []);
 
   useEffect(() => {
+  refresh();
+}, [refresh]);
+
+  useEffect(() => {
+  const sub = DeviceEventEmitter.addListener('CARTA_DATA_UPDATED', () => {
     refresh();
-  }, [refresh]);
+  });
+return () => {
+    sub.remove();
+  };
+}, [refresh]);
 
   const mergedForStats: Session[] = useMemo(() => {
     const asSession: Session[] = ema.map(e => ({
@@ -150,29 +161,48 @@ export default function CoachScreen() {
     };
   }, [mergedForStats]);
 
-  const onClinicianPdf = useCallback(async () => {
-    const html = buildClinicianHtml(mergedForStats);
+ const onClinicianPdf = useCallback(async () => {
+  const html = buildClinicianHtml(mergedForStats);
+
+  try {
+    const { printToFileAsync } = await import('expo-print');
+    const { uri } = await printToFileAsync({ html });
+
+    // Primary path: open generated PDF in the in-app viewer so iOS
+    // can show native share / markup controls.
     try {
-      const { printToFileAsync } = await import('expo-print');
-      const { uri } = await printToFileAsync({ html });
-      try {
-        const Sharing = await import('expo-sharing');
-        if (await Sharing.isAvailableAsync()) await Sharing.shareAsync(uri);
-        else Alert.alert('PDF created', uri);
-      } catch {
+      (nav as any).navigate?.('HandoutViewer', {
+        title: 'Clinician PDF',
+        uri,
+      });
+      return;
+    } catch {
+      // If navigation fails, fall back to sharing / alert below.
+    }
+
+    try {
+      const Sharing = await import('expo-sharing');
+      if (await Sharing.isAvailableAsync()) {
+        await Sharing.shareAsync(uri);
+      } else {
         Alert.alert('PDF created', uri);
       }
     } catch {
-      try {
-        (nav as any).navigate?.('SummaryPreview', { html });
-      } catch {
-        Alert.alert(
-          'Install',
-          'To export a PDF, run: npx expo install expo-print expo-sharing',
-        );
-      }
+      Alert.alert('PDF created', uri);
     }
-  }, [mergedForStats, nav]);
+  } catch {
+    // Printing failed – at least show HTML preview.
+    try {
+      (nav as any).navigate?.('SummaryPreview', { html });
+    } catch {
+      Alert.alert(
+        'Install',
+        'To export a PDF, run: npx expo install expo-print expo-sharing',
+      );
+    }
+  }
+}, [mergedForStats, nav]);
+
 
   return (
     <ImageBackground
@@ -226,29 +256,6 @@ export default function CoachScreen() {
               }
             />
           </View>
-
-          <View style={st.row}>
-            <Pressable
-              onPress={() => (nav as any).navigate?.('Tracker')}
-              style={({ pressed }) => [
-                st.btn,
-                pressed && { opacity: 0.9 },
-              ]}
-            >
-              <Text style={st.btnTxt}>Open Tracker</Text>
-            </Pressable>
-            <Pressable
-              onPress={onClinicianPdf}
-              style={({ pressed }) => [
-                st.btn,
-                { marginLeft: 12 },
-                pressed && { opacity: 0.9 },
-              ]}
-            >
-              <Text style={st.btnTxt}>Clinician PDF</Text>
-            </Pressable>
-          </View>
-
           <View style={[st.card, { marginTop: 14 }]}>
             <Text style={st.cardTitle}>Suggestions</Text>
             {makeSmartTips(mergedForStats).map((t, i) => (
@@ -285,7 +292,7 @@ function makeSmartTips(sessions: Session[]): string[] {
   const avgLast = last.relief ? avg(Object.values(last.relief).map(Number)) : 0;
   if (avgLast >= 4)
     tips.push(
-      'Current plan is working—repeat the best-performing regimen for a few sessions.',
+      'Current plan is working — repeat the best-performing regimen for a few sessions.',
     );
   if (
     avgLast >= 3 &&
@@ -299,11 +306,11 @@ function makeSmartTips(sessions: Session[]): string[] {
     (last.inhalable?.puffs ?? 0) <= 2
   )
     tips.push(
-      'Relief modest—try +1 puff or step up potency to mid next session.',
+      'Relief modest — try +1 puff or step up potency to mid next session.',
     );
   if ((last.sideEffects || []).includes('Sedation'))
     tips.push(
-      'Note sedation—avoid stacking THC after 9pm; favor Booster with Bedtime capsule.',
+      'Note sedation — avoid stacking THC after 9pm; favor Booster with Bedtime capsule.',
     );
   if (!tips.length)
     tips.push(
@@ -435,7 +442,7 @@ const st = StyleSheet.create({
     fontFamily: HEADLINE_SERIF, 
     fontSize: 16,
     fontWeight: '800',
-    marginBottom: 14,
+    marginBottom: 8
   },
   kv: { color: TEXT, fontFamily: HEADLINE_SERIF, marginBottom: 6 },
   k: { fontFamily: HEADLINE_SERIF, color: '#BFC7C2' },
