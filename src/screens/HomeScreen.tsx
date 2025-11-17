@@ -50,7 +50,7 @@ export default memo(function HomeScreen() {
   return (
     <SafeAreaView style={s.safe}>
       <ImageBackground
-        source={require('../../assets/poster/carta_poster.png')}
+        source={require('../../assets/poster/carta_poster.jpg')}
         resizeMode={Platform.OS === 'ios' ? 'cover' : 'cover'}
         style={s.bg}
       >
